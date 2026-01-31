@@ -1,21 +1,20 @@
 import { Routes, Route } from 'react-router-dom';
+import Header from './components/layout/Header';
+import HomePage from './pages/HomePage';
+import { LoginPage, RegisterPage } from './pages/auth';
+import ProtectedRoute from './components/auth/ProtectedRoute';
 
-// Placeholder components - replace with actual page components
-const Home = () => (
-  <div className="min-h-screen bg-background flex items-center justify-center">
-    <div className="text-center">
-      <h1 className="text-4xl font-bold text-text mb-4">Welcome to Agrikonnect</h1>
-      <p className="text-lg text-gray-600 mb-8">Connecting farmers and agricultural experts</p>
-      <div className="space-x-4">
-        <button className="btn-primary">Get Started</button>
-        <button className="btn-secondary">Learn More</button>
-      </div>
+// Layout component for pages with header
+const Layout = ({ children }) => (
+  <>
+    <Header />
+    <div className="pt-16">
+      {children}
     </div>
-  </div>
+  </>
 );
 
-const Login = () => <div className="p-8">Login Page - Coming Soon</div>;
-const Register = () => <div className="p-8">Register Page - Coming Soon</div>;
+// Placeholder components for protected routes
 const Posts = () => <div className="p-8">Posts Page - Coming Soon</div>;
 const Communities = () => <div className="p-8">Communities Page - Coming Soon</div>;
 const Experts = () => <div className="p-8">Experts Page - Coming Soon</div>;
@@ -26,15 +25,15 @@ const Notifications = () => <div className="p-8">Notifications Page - Coming Soo
 function App() {
   return (
     <Routes>
-      <Route path="/" element={<Home />} />
-      <Route path="/login" element={<Login />} />
-      <Route path="/register" element={<Register />} />
-      <Route path="/posts" element={<Posts />} />
-      <Route path="/communities" element={<Communities />} />
-      <Route path="/experts" element={<Experts />} />
-      <Route path="/messages" element={<Messages />} />
-      <Route path="/profile" element={<Profile />} />
-      <Route path="/notifications" element={<Notifications />} />
+      <Route path="/" element={<Layout><HomePage /></Layout>} />
+      <Route path="/login" element={<LoginPage />} />
+      <Route path="/register" element={<RegisterPage />} />
+      <Route path="/posts" element={<ProtectedRoute><Layout><Posts /></Layout></ProtectedRoute>} />
+      <Route path="/communities" element={<ProtectedRoute><Layout><Communities /></Layout></ProtectedRoute>} />
+      <Route path="/experts" element={<ProtectedRoute><Layout><Experts /></Layout></ProtectedRoute>} />
+      <Route path="/messages" element={<ProtectedRoute><Layout><Messages /></Layout></ProtectedRoute>} />
+      <Route path="/profile" element={<ProtectedRoute><Layout><Profile /></Layout></ProtectedRoute>} />
+      <Route path="/notifications" element={<ProtectedRoute><Layout><Notifications /></Layout></ProtectedRoute>} />
     </Routes>
   );
 }

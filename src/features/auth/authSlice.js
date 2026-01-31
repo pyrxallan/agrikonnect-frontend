@@ -20,7 +20,21 @@ export const register = createAsyncThunk(
   'auth/register',
   async (userData, { rejectWithValue }) => {
     try {
-      const response = await api.post('/auth/register', userData);
+      // Map userType to role for backend compatibility
+      const roleMapping = {
+        farmer: 'farmer',
+        expert: 'expert',
+        vendor: 'farmer', // Default to farmer for now
+        enthusiast: 'farmer' // Default to farmer for now
+      };
+
+      const apiData = {
+        ...userData,
+        role: roleMapping[userData.userType] || 'farmer'
+      };
+      delete apiData.userType; // Remove userType as backend expects role
+
+      const response = await api.post('/auth/register', apiData);
       const { token, user } = response.data;
       localStorage.setItem('token', token);
       return { user, token };
