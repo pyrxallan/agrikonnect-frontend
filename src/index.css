@@ -2,6 +2,7 @@
 @tailwind components;
 @tailwind utilities;
 
+
 /* Custom styles for Agrikonnect */
 @layer base {
   html {
