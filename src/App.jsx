@@ -3,6 +3,7 @@ import Header from './components/layout/Header';
 import HomePage from './pages/HomePage';
 import { LoginPage, RegisterPage } from './pages/auth';
 import ProtectedRoute from './components/auth/ProtectedRoute';
+import FeedPage from './pages/posts/FeedPage';
 
 // Layout component for pages with header
 const Layout = ({ children }) => (
@@ -15,7 +16,6 @@ const Layout = ({ children }) => (
 );
 
 // Placeholder components for protected routes
-const Posts = () => <div className="p-8">Posts Page - Coming Soon</div>;
 const Communities = () => <div className="p-8">Communities Page - Coming Soon</div>;
 const Experts = () => <div className="p-8">Experts Page - Coming Soon</div>;
 const Messages = () => <div className="p-8">Messages Page - Coming Soon</div>;
@@ -28,7 +28,7 @@ function App() {
       <Route path="/" element={<Layout><HomePage /></Layout>} />
       <Route path="/login" element={<LoginPage />} />
       <Route path="/register" element={<RegisterPage />} />
-      <Route path="/posts" element={<ProtectedRoute><Layout><Posts /></Layout></ProtectedRoute>} />
+      <Route path="/posts" element={<ProtectedRoute><Layout><FeedPage /></Layout></ProtectedRoute>} />
       <Route path="/communities" element={<ProtectedRoute><Layout><Communities /></Layout></ProtectedRoute>} />
       <Route path="/experts" element={<ProtectedRoute><Layout><Experts /></Layout></ProtectedRoute>} />
       <Route path="/messages" element={<ProtectedRoute><Layout><Messages /></Layout></ProtectedRoute>} />
