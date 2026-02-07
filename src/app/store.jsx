@@ -3,11 +3,15 @@ import { persistStore, persistReducer } from 'redux-persist';
 import { combineReducers } from 'redux';
 import authReducer from '../features/auth/authSlice';
 import postsReducer from '../features/posts/postsSlice';
+import communitiesReducer from '../features/communities/communitiesSlice';
+import expertsReducer from '../features/experts/expertsSlice';
 
 // Combine reducers for different features
 const rootReducer = combineReducers({
   auth: authReducer,
   posts: postsReducer,
+  communities: communitiesReducer,
+  experts: expertsReducer,
 });
 
 const createNoopStorage = () => ({
@@ -30,7 +34,7 @@ const storage = typeof window !== 'undefined' && typeof localStorage !== 'undefi
 const persistConfig = {
   key: 'root',
   storage,
-  whitelist: ['auth'], //can add other reducers here if needed
+  whitelist: ['auth'], // can add other reducers here if needed
 };
 
 // Create a persisted reducer
