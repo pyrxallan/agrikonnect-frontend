@@ -14,6 +14,7 @@ const FeedPage = () => {
   const dispatch = useDispatch();
   const { posts, loading, error, hasMore } = useSelector(state => state.posts); 
   const currentUserId = useSelector(state => state.auth.user?.id);
+  const currentUserName = useSelector(state => state.auth.user?.first_name || 'User');
 
   // Fetch initial posts on mount
   useEffect(() => {
@@ -53,8 +54,8 @@ const FeedPage = () => {
   };
 
   return (
-    <div className="max-w-2xl mx-auto p-4">
-      <PostComposer onSubmit={handlePostSubmit} userInitial={currentUserId ? currentUserId[0].toUpperCase() : 'Y'} />
+    <div className="max-w-7xl mx-auto p-4">
+      <PostComposer onSubmit={handlePostSubmit} userInitial={currentUserName[0].toUpperCase()} />
       {error && <p className="text-red-500 text-sm mt-2">{error}</p>}
       <PostList
         posts={posts}
