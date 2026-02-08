@@ -2,14 +2,14 @@ import { Routes, Route } from 'react-router-dom';
 import Header from './components/layout/Header';
 import Footer from './components/layout/Footer';
 import HomePage from './pages/HomePage';
+import { LoginPage, RegisterPage } from './pages/auth';
+import ProtectedRoute from './components/auth/ProtectedRoute';
+import FeedPage from './pages/posts/FeedPage';
 import CommunitiesPage from './pages/CommunitiesPage';
 import CommunityDetails from './pages/CommunityDetails';
 import CreateCommunity from './pages/CreateCommunity';
 import ExpertsPage from './pages/ExpertsPage';
 import ExpertProfilePage from './pages/ExpertProfilePage';
-import FeedPage from './pages/posts/FeedPage';
-import { LoginPage, RegisterPage } from './pages/auth';
-import ProtectedRoute from './components/auth/ProtectedRoute';
 
 const Layout = ({ children }) => (
   <>
@@ -21,6 +21,16 @@ const Layout = ({ children }) => (
   </>
 );
 
+// Home layout without padding
+const HomeLayout = ({ children }) => (
+  <>
+    <Header />
+    {children}
+    <Footer />
+  </>
+);
+
+// Placeholder components for routes not yet implemented
 const Messages = () => <div className="p-8">Messages Page - Coming Soon</div>;
 const Profile = () => <div className="p-8">Profile Page - Coming Soon</div>;
 const Notifications = () => <div className="p-8">Notifications Page - Coming Soon</div>;
