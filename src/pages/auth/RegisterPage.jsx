@@ -137,8 +137,6 @@ const RegisterPage = () => {
                 <option value="">Select your role</option>
                 <option value="farmer">Farmer</option>
                 <option value="expert">Agricultural Expert</option>
-                <option value="vendor">Vendor/Supplier</option>
-                <option value="enthusiast">Agriculture Enthusiast</option>
               </select>
               {errors.userType && (
                 <p className="mt-1 text-sm text-red-600">{errors.userType.message}</p>
