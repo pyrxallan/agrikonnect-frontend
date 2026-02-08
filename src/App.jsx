@@ -1,5 +1,6 @@
 import { Routes, Route } from 'react-router-dom';
 import Header from './components/layout/Header';
+import Footer from './components/layout/Footer';
 import HomePage from './pages/HomePage';
 import { LoginPage, RegisterPage } from './pages/auth';
 import ProtectedRoute from './components/auth/ProtectedRoute';
@@ -11,6 +12,16 @@ const Layout = ({ children }) => (
     <div className="pt-16">
       {children}
     </div>
+    <Footer />
+  </>
+);
+
+// Home layout without padding
+const HomeLayout = ({ children }) => (
+  <>
+    <Header />
+    {children}
+    <Footer />
   </>
 );
 
@@ -25,7 +36,7 @@ const Notifications = () => <div className="p-8">Notifications Page - Coming Soo
 function App() {
   return (
     <Routes>
-      <Route path="/" element={<Layout><HomePage /></Layout>} />
+      <Route path="/" element={<HomeLayout><HomePage /></HomeLayout>} />
       <Route path="/login" element={<LoginPage />} />
       <Route path="/register" element={<RegisterPage />} />
       <Route path="/posts" element={<ProtectedRoute><Layout><Posts /></Layout></ProtectedRoute>} />
