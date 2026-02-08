@@ -7,10 +7,10 @@ export default {
   theme: {
     extend: {
       colors: {
-        primary: '#22C55E', // Green color for agriculture
-        secondary: '#F59E0B', // Amber/Orange
-        text: '#1F2937', // Dark gray for text
-        background: '#F9FAFB', // Light gray background
+        primary: '#2d5a2d',
+        secondary: '#4a7c4a',
+        text: '#1F2937',
+        background: '#F9FAFB',
       },
     },
   },

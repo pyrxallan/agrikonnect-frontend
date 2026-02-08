@@ -13,7 +13,9 @@ const Footer = () => {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           {/* Brand Section */}
           <div>
-            <h3 className="text-3xl font-bold text-white mb-4">Agrikonnect</h3>
+            <Link to="/" className="flex items-center gap-3 mb-4">
+              <img src="/agrikkonect-logo.png" alt="Agrikonnect" className="h-10" />
+            </Link>
             <p className="text-gray-300 mb-6 leading-relaxed">Empowering farmers with knowledge, connecting communities, and cultivating success together.</p>
             <div className="flex gap-4">
               <a href="https://tiktok.com" target="_blank" rel="noopener noreferrer" className="bg-white/10 p-2 rounded-full hover:bg-white/20 transition-colors">
@@ -30,30 +32,30 @@ const Footer = () => {
 
           {/* Quick Links */}
           <div>
-            <h4 className="text-sm font-bold text-white uppercase mb-6 pb-2 border-b-2 border-primary">Quick Links</h4>
+            <h4 className="text-sm font-bold text-white uppercase mb-6 pb-2 border-b-2 border-secondary">Quick Links</h4>
             <ul className="space-y-3">
-              <li><Link to="/" className="text-gray-300 hover:text-primary transition-colors">About Us</Link></li>
-              <li><Link to="/" className="text-gray-300 hover:text-primary transition-colors">Blog & News</Link></li>
-              <li><Link to="/communities" className="text-gray-300 hover:text-primary transition-colors">Communities</Link></li>
-              <li><Link to="/experts" className="text-gray-300 hover:text-primary transition-colors">Find Experts</Link></li>
-              <li><Link to="/" className="text-gray-300 hover:text-primary transition-colors">Contact Us</Link></li>
+              <li><Link to="/" className="text-gray-300 hover:text-secondary transition-colors">About Us</Link></li>
+              <li><Link to="/" className="text-gray-300 hover:text-secondary transition-colors">Blog & News</Link></li>
+              <li><Link to="/communities" className="text-gray-300 hover:text-secondary transition-colors">Communities</Link></li>
+              <li><Link to="/experts" className="text-gray-300 hover:text-secondary transition-colors">Find Experts</Link></li>
+              <li><Link to="/" className="text-gray-300 hover:text-secondary transition-colors">Contact Us</Link></li>
             </ul>
           </div>
 
           {/* Resources */}
           <div>
-            <h4 className="text-sm font-bold text-white uppercase mb-6 pb-2 border-b-2 border-primary">Resources</h4>
+            <h4 className="text-sm font-bold text-white uppercase mb-6 pb-2 border-b-2 border-secondary">Resources</h4>
             <ul className="space-y-3">
-              <li><Link to="/" className="text-gray-300 hover:text-primary transition-colors">Help Center</Link></li>
-              <li><Link to="/" className="text-gray-300 hover:text-primary transition-colors">FAQs</Link></li>
-              <li><Link to="/" className="text-gray-300 hover:text-primary transition-colors">Terms & Conditions</Link></li>
-              <li><Link to="/" className="text-gray-300 hover:text-primary transition-colors">Privacy Policy</Link></li>
+              <li><Link to="/" className="text-gray-300 hover:text-secondary transition-colors">Help Center</Link></li>
+              <li><Link to="/" className="text-gray-300 hover:text-secondary transition-colors">FAQs</Link></li>
+              <li><Link to="/" className="text-gray-300 hover:text-secondary transition-colors">Terms & Conditions</Link></li>
+              <li><Link to="/" className="text-gray-300 hover:text-secondary transition-colors">Privacy Policy</Link></li>
             </ul>
           </div>
 
           {/* Newsletter */}
           <div>
-            <h4 className="text-sm font-bold text-white uppercase mb-6 pb-2 border-b-2 border-primary">Newsletter</h4>
+            <h4 className="text-sm font-bold text-white uppercase mb-6 pb-2 border-b-2 border-secondary">Newsletter</h4>
             <p className="text-gray-300 mb-4 text-sm leading-relaxed">Get weekly farming insights, expert tips, and community updates delivered to your inbox.</p>
             <div className="flex">
               <input 
@@ -61,7 +63,7 @@ const Footer = () => {
                 placeholder="Enter your email" 
                 className="flex-1 px-4 py-3 rounded-l-full bg-white/10 border border-white/20 text-white placeholder-gray-400 focus:outline-none focus:border-primary focus:bg-white/20 transition-colors"
               />
-              <button className="bg-primary text-white px-6 py-3 rounded-r-full hover:bg-secondary transition-colors font-semibold">
+              <button className="bg-secondary text-white px-6 py-3 rounded-r-full hover:bg-primary transition-colors font-semibold">
                 →
               </button>
             </div>
