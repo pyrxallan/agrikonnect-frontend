@@ -2,20 +2,53 @@
 @tailwind components;
 @tailwind utilities;
 
-
-/* Custom styles for Agrikonnect */
 @layer base {
-  html {
+  html, body, #root {
     font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    overflow-x: hidden;
+  }
+
+  body {
+    overflow-y: auto;
+  }
+
+  /* Custom Scrollbar */
+  ::-webkit-scrollbar {
+    width: 12px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: #1a3a1a;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: linear-gradient(180deg, #2d5a2d, #4a7c4a);
+    border-radius: 6px;
+    border: 2px solid #1a3a1a;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(180deg, #4a7c4a, #5d9a5d);
   }
 }
 
 @layer components {
   .btn-primary {
-    @apply bg-primary text-white px-4 py-2 rounded-lg hover:bg-opacity-90 transition-colors;
+    @apply bg-primary text-white px-6 py-3 rounded-full hover:bg-opacity-90 transition-all shadow-md hover:shadow-lg;
   }
 
   .btn-secondary {
-    @apply bg-secondary text-black px-4 py-2 rounded-lg hover:bg-opacity-90 transition-colors;
+    @apply bg-secondary text-white px-6 py-3 rounded-full hover:bg-opacity-90 transition-all shadow-md hover:shadow-lg;
+  }
+
+  .glass {
+    @apply bg-white/10 backdrop-blur-md border border-white/20;
+  }
+
+  .glass-dark {
+    @apply bg-black/20 backdrop-blur-md border border-white/10;
   }
 }

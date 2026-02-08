@@ -73,8 +73,8 @@ export const register = createAsyncThunk(
       const roleMapping = {
         farmer: 'farmer',
         expert: 'expert',
-        vendor: 'farmer', // Default to farmer for now
-        enthusiast: 'farmer' // Default to farmer for now
+        vendor: 'farmer',
+        enthusiast: 'farmer'
       };
 
       const apiData = {

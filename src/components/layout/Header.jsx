@@ -14,17 +14,15 @@ const Header = () => {
   const [mobileOpen, setMobileOpen] = useState(false);
 
   return (
-    <header className="bg-white shadow-sm border-b border-gray-200 fixed top-0 left-0 right-0 z-50">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between items-center h-16">
-          {/* Logo */}
-          <Link to="/" className="text-2xl font-bold text-primary">
-            Agrikonnect
+    <header className="glass fixed top-0 left-0 right-0 z-50 shadow-lg">
+      <div className="w-full px-4 sm:px-6 lg:px-8">
+        <div className="flex justify-between items-center h-20">
+          <Link to="/" className="flex items-center gap-3">
+            <img src="/agrikkonect-logo.png" alt="Agrikonnect" className="h-16" />
           </Link>
 
-          {/* Mobile menu button */}
           <button
-            className="md:hidden p-2 rounded-md text-gray-600 hover:bg-gray-100"
+            className="md:hidden p-2 rounded-md text-white hover:bg-white/10"
             onClick={() => setMobileOpen((s) => !s)}
             aria-label="Toggle menu"
           >
@@ -33,30 +31,28 @@ const Header = () => {
             </svg>
           </button>
 
-          {/* Navigation - desktop */}
           <nav className="hidden md:flex items-center gap-8">
-            <Link to="/" className="text-gray-700 hover:text-primary transition-colors font-medium">
+            <Link to="/" className="text-white hover:text-secondary transition-colors font-medium">
               Home
             </Link>
-            <Link to="/posts" className="text-gray-700 hover:text-primary transition-colors font-medium">
+            <Link to="/posts" className="text-white hover:text-secondary transition-colors font-medium">
               Posts
             </Link>
-            <Link to="/communities" className="text-gray-700 hover:text-primary transition-colors font-medium">
+            <Link to="/communities" className="text-white hover:text-secondary transition-colors font-medium">
               Communities
             </Link>
-            <Link to="/experts" className="text-gray-700 hover:text-primary transition-colors font-medium">
+            <Link to="/experts" className="text-white hover:text-secondary transition-colors font-medium">
               Experts
             </Link>
           </nav>
 
-          {/* Auth Buttons */}
           <div className="hidden md:flex items-center gap-4">
             {token && user ? (
               <>
-                <span className="text-gray-700 text-sm">Welcome, {user.first_name}!</span>
+                <span className="text-white text-sm">Welcome, {user.first_name}!</span>
                 <Link
                   to="/profile"
-                  className="text-gray-700 hover:text-primary transition-colors font-medium"
+                  className="text-white hover:text-secondary transition-colors font-medium"
                 >
                   Profile
                 </Link>
@@ -80,41 +76,39 @@ const Header = () => {
           </div>
         </div>
 
-        {/* Mobile nav panel */}
         {mobileOpen && (
-          <div className="md:hidden border-t border-gray-200 py-4">
+          <div className="md:hidden border-t border-white/20 py-4">
             <nav className="flex flex-col space-y-3">
               <Link 
                 to="/" 
-                className="text-gray-700 hover:text-primary hover:bg-gray-50 px-4 py-2 rounded-md transition-colors"
+                className="text-white hover:text-secondary hover:bg-white/10 px-4 py-2 rounded-md transition-colors"
                 onClick={() => setMobileOpen(false)}
               >
                 Home
               </Link>
               <Link 
                 to="/posts" 
-                className="text-gray-700 hover:text-primary hover:bg-gray-50 px-4 py-2 rounded-md transition-colors"
+                className="text-white hover:text-secondary hover:bg-white/10 px-4 py-2 rounded-md transition-colors"
                 onClick={() => setMobileOpen(false)}
               >
                 Posts
               </Link>
               <Link 
                 to="/communities" 
-                className="text-gray-700 hover:text-primary hover:bg-gray-50 px-4 py-2 rounded-md transition-colors"
+                className="text-white hover:text-secondary hover:bg-white/10 px-4 py-2 rounded-md transition-colors"
                 onClick={() => setMobileOpen(false)}
               >
                 Communities
               </Link>
               <Link 
                 to="/experts" 
-                className="text-gray-700 hover:text-primary hover:bg-gray-50 px-4 py-2 rounded-md transition-colors"
+                className="text-white hover:text-secondary hover:bg-white/10 px-4 py-2 rounded-md transition-colors"
                 onClick={() => setMobileOpen(false)}
               >
                 Experts
               </Link>
               
-              {/* Mobile Auth Buttons */}
-              <div className="pt-4 border-t border-gray-200 space-y-2">
+              <div className="pt-4 border-t border-white/20 space-y-2">
                 {token && user ? (
                   <>
                     <Link 

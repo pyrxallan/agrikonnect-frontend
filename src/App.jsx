@@ -1,5 +1,6 @@
 import { Routes, Route } from 'react-router-dom';
 import Header from './components/layout/Header';
+import Footer from './components/layout/Footer';
 import HomePage from './pages/HomePage';
 import CommunitiesPage from './pages/CommunitiesPage';
 import CommunityDetails from './pages/CommunityDetails';
@@ -16,6 +17,7 @@ const Layout = ({ children }) => (
     <div className="pt-16">
       {children}
     </div>
+    <Footer />
   </>
 );
 
