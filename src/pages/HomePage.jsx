@@ -5,7 +5,7 @@ const HomePage = () => {
   const { user, token } = useAppSelector((state) => state.auth);
 
   return (
-    <div className="h-screen overflow-y-auto">
+    <div className="min-h-screen">
       {/* Hero Section with Background Image */}
       <section className="relative h-screen flex items-center">
         <div 
@@ -84,8 +84,8 @@ const HomePage = () => {
 
       {/* Stats Section */}
       <section className="py-20 bg-white">
-        <div className="max-w-7xl mx-auto px-6 lg:px-8">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
+        <div className="w-full px-6 lg:px-8">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-8 max-w-7xl mx-auto">
             <div className="text-center">
               <div className="text-5xl font-bold text-secondary mb-2">100+</div>
               <div className="text-gray-600 font-medium">Active Farmers</div>
@@ -108,8 +108,8 @@ const HomePage = () => {
 
       {/* Features Section */}
       <section className="py-20 bg-gradient-to-b from-gray-50 to-white">
-        <div className="max-w-7xl mx-auto px-6 lg:px-8">
-          <div className="text-center mb-16">
+        <div className="w-full px-6 lg:px-8">
+          <div className="text-center mb-16 max-w-7xl mx-auto">
             <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
               Everything You Need to <span className="text-secondary">Succeed</span>
             </h2>
@@ -118,7 +118,7 @@ const HomePage = () => {
             </p>
           </div>
 
-          <div className="grid md:grid-cols-3 gap-8">
+          <div className="grid md:grid-cols-3 gap-8 max-w-7xl mx-auto">
             <div className="glass bg-white p-8 rounded-3xl shadow-lg hover:shadow-2xl transition-all transform hover:-translate-y-1">
               <div className="w-16 h-16 bg-gradient-to-br from-primary to-secondary rounded-2xl flex items-center justify-center mb-6">
                 <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -160,15 +160,15 @@ const HomePage = () => {
 
       {/* How It Works */}
       <section className="py-20 bg-white">
-        <div className="max-w-7xl mx-auto px-6 lg:px-8">
-          <div className="text-center mb-16">
+        <div className="w-full px-6 lg:px-8">
+          <div className="text-center mb-16 max-w-7xl mx-auto">
             <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
               How <span className="text-secondary">Agrikonnect</span> Works
             </h2>
             <p className="text-xl text-gray-600">Simple steps to transform your farming journey</p>
           </div>
 
-          <div className="grid md:grid-cols-3 gap-12">
+          <div className="grid md:grid-cols-3 gap-12 max-w-7xl mx-auto">
             <div className="text-center">
               <div className="w-20 h-20 bg-secondary/10 rounded-full flex items-center justify-center mx-auto mb-6">
                 <span className="text-3xl font-bold text-secondary">1</span>
@@ -197,13 +197,17 @@ const HomePage = () => {
       </section>
 
       {/* Testimonial Section */}
-      <section className="py-20 bg-gradient-to-br from-primary to-secondary text-white">
-        <div className="max-w-7xl mx-auto px-6 lg:px-8">
+      <section className="relative py-20 text-white overflow-hidden">
+        <div className="absolute inset-0">
+          <img src="/farm-2.avif" alt="" className="w-full h-full object-cover" />
+          <div className="absolute inset-0 bg-gradient-to-br from-primary/95 to-secondary/95" />
+        </div>
+        <div className="relative z-10 w-full px-6 lg:px-8">
           <div className="text-center mb-12">
             <h2 className="text-4xl md:text-5xl font-bold mb-4">Success Stories</h2>
             <p className="text-xl text-white/90">Real farmers, real results</p>
           </div>
-          <div className="grid md:grid-cols-2 gap-8">
+          <div className="grid md:grid-cols-2 gap-8 max-w-7xl mx-auto">
             <div className="glass-dark p-8 rounded-3xl">
               <div className="flex items-center gap-4 mb-6">
                 <img src="/farmer-1.jpg" alt="" className="w-16 h-16 rounded-full border-4 border-white object-cover" />
@@ -259,11 +263,11 @@ const HomePage = () => {
       {/* CTA Section */}
       {!token && (
         <section className="py-24 bg-gray-900 text-white">
-          <div className="max-w-4xl mx-auto px-6 lg:px-8 text-center">
+          <div className="w-full px-6 lg:px-8 text-center">
             <h2 className="text-4xl md:text-5xl font-bold mb-6">
               Ready to Transform Your Farm?
             </h2>
-            <p className="text-xl text-gray-300 mb-10 leading-relaxed">
+            <p className="text-xl text-gray-300 mb-10 leading-relaxed max-w-4xl mx-auto">
               Join thousands of farmers already growing smarter with Agrikonnect. Get started today—it's completely free.
             </p>
             <div className="flex flex-wrap justify-center gap-4">
