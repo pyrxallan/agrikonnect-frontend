@@ -46,25 +46,27 @@ const ExpertProfilePage = () => {
     }
   };
 
-  if (loading) return <div className="p-8">Loading...</div>;
+  if (loading) return <div className="min-h-screen relative flex items-center justify-center"><div className="absolute inset-0 bg-cover bg-center bg-no-repeat" style={{ backgroundImage: 'url(/agricultural_expert_page.jpg)' }} /><div className="absolute inset-0 bg-gradient-to-b from-white/20 to-white/10" /><div className="relative z-10 text-gray-600 text-xl">Loading...</div></div>;
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
-      <div className="max-w-4xl mx-auto px-4 py-8">
+    <div className="min-h-screen relative">
+      <div className="absolute inset-0 bg-cover bg-center bg-no-repeat" style={{ backgroundImage: 'url(/agricultural_expert_page.jpg)' }} />
+      <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-white/10" />
+      <div className="relative z-10 max-w-4xl mx-auto px-6 lg:px-8 py-12">
         {/* Back navigation */}
         <button 
           onClick={() => navigate('/experts')} 
-          className="flex items-center gap-2 text-green-600 dark:text-green-600 hover:text-green-700 mb-3"
+          className="flex items-center gap-2 text-secondary hover:text-secondary/80 font-semibold mb-6 transition-all"
         >
-          Back to Experts
+          ← Back to Experts
         </button>
         
         {/* profile card */}
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-8">
+        <div className="glass bg-white/40 backdrop-blur-sm rounded-3xl shadow-lg p-8">
           {/* header section with avatar and basic info */}
           <div className="flex items-start gap-6 mb-6">
             {/* avatar - shows image or initials */}
-            <div className="w-24 h-24 bg-primary-100 dark:bg-primary-900 rounded-full flex items-center justify-center text-primary-600 dark:text-primary-400 font-bold text-2xl">
+            <div className="w-24 h-24 bg-gradient-to-br from-primary to-secondary rounded-full flex items-center justify-center text-white font-bold text-2xl">
               {expert.avatar_url ? (
                 <img 
                   src={expert.avatar_url} 
@@ -79,15 +81,15 @@ const ExpertProfilePage = () => {
             
             {/* name, title, location, and action buttons */}
             <div className="flex-1">
-              <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
+              <h1 className="text-3xl font-bold text-gray-900 mb-2">
                 {expert.name}
               </h1>
-              <p className="text-lg text-gray-600 dark:text-gray-400 mb-3">
+              <p className="text-lg text-gray-600 mb-3">
                 {expert.title}
               </p>
               {/* location that only shows if available */}
               {expert.location && (
-                <div className="flex items-center gap-2 text-gray-500 dark:text-gray-400 mb-4">
+                <div className="flex items-center gap-2 text-gray-500 mb-4">
                   {expert.location}
                 </div>
               )}
@@ -96,43 +98,43 @@ const ExpertProfilePage = () => {
               <div className="flex gap-3">
                 <button 
                   onClick={handleFollow} 
-                  className="px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 font-medium"
+                  className="px-6 py-3 bg-secondary text-white rounded-full font-semibold hover:bg-secondary/90 transition-all shadow-lg"
                 >
                   {expert.is_following ? 'Following' : 'Follow'}
                 </button>
                 {/* message button for sendig messages */}
-                <button className="px-6 py-2 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 flex items-center gap-2">
-                   Message
+                <button className="px-6 py-3 glass bg-white text-gray-700 rounded-full font-semibold hover:bg-gray-50 transition-all flex items-center gap-2">
+                  Message
                 </button>
               </div>
             </div>
           </div>
           
           {/* statistics section that shows followers, posts and rating */}
-          <div className="grid grid-cols-3 gap-4 mb-6 p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
+          <div className="grid grid-cols-3 gap-4 mb-6 p-4 rounded-2xl">
             <div className="text-center">
-              <div className="text-2xl font-bold text-gray-900 dark:text-white">
+              <div className="text-2xl font-bold text-secondary">
                 {expert.followers}
               </div>
-              <div className="text-sm text-gray-600 dark:text-gray-400">Followers</div>
+              <div className="text-sm text-gray-600">Followers</div>
             </div>
             <div className="text-center">
-              <div className="text-2xl font-bold text-gray-900 dark:text-white">
+              <div className="text-2xl font-bold text-secondary">
                 {expert.posts}
               </div>
-              <div className="text-sm text-gray-600 dark:text-gray-400">Posts</div>
+              <div className="text-sm text-gray-600">Posts</div>
             </div>
             <div className="text-center">
-              <div className="text-2xl font-bold text-gray-900 dark:text-white">
+              <div className="text-2xl font-bold text-secondary">
                 {expert.rating}
               </div>
-              <div className="text-sm text-gray-600 dark:text-gray-400">Rating</div>
+              <div className="text-sm text-gray-600">Rating</div>
             </div>
           </div>
-          
+
           {/* specialties section */}
           <div className="mb-6">
-            <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-3">
+            <h2 className="text-xl font-bold text-gray-900 mb-3">
               Specialties
             </h2>
             {/* list of specialty tags */}
@@ -140,7 +142,7 @@ const ExpertProfilePage = () => {
               {(expert.specialties || []).map(spec => (
                 <span 
                   key={spec} 
-                  className="px-3 py-1 bg-primary-50 dark:bg-primary-900 border border-primary-200 dark:border-primary-700 text-primary-700 dark:text-primary-300 rounded-full"
+                  className="px-3 py-1 bg-secondary/10 text-secondary rounded-full font-semibold"
                 >
                   {spec}
                 </span>
@@ -151,10 +153,10 @@ const ExpertProfilePage = () => {
           {/* experts biography that only shown if bio exists */}
           {expert.bio && (
             <div>
-              <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-3">
+              <h2 className="text-xl font-bold text-gray-900 mb-3">
                 About
               </h2>
-              <p className="text-gray-700 dark:text-gray-300">{expert.bio}</p>
+              <p className="text-gray-600 leading-relaxed">{expert.bio}</p>
             </div>
           )}
         </div>

@@ -11,11 +11,10 @@ import CreateCommunity from './pages/CreateCommunity';
 import ExpertsPage from './pages/ExpertsPage';
 import ExpertProfilePage from './pages/ExpertProfilePage';
 
-// Layout component for pages with header
 const Layout = ({ children }) => (
   <>
     <Header />
-    <div className="pt-20">
+    <div className="pt-16">
       {children}
     </div>
     <Footer />
@@ -39,7 +38,7 @@ const Notifications = () => <div className="p-8">Notifications Page - Coming Soo
 function App() {
   return (
     <Routes>
-      <Route path="/" element={<HomeLayout><HomePage /></HomeLayout>} />
+      <Route path="/" element={<Layout><HomePage /></Layout>} />
       <Route path="/login" element={<LoginPage />} />
       <Route path="/register" element={<RegisterPage />} />
       <Route path="/posts" element={<ProtectedRoute><Layout><FeedPage /></Layout></ProtectedRoute>} />

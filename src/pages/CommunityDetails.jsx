@@ -90,22 +90,23 @@ const CommunityDetails = () => {
   // check if current user is the community creator hence he/she can delete community
   const isAdmin = user?.id === community?.creator_id;
   
-  if (!community) return <div className="p-8">Loading...</div>;
+  if (!community) return <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white flex items-center justify-center"><div className="text-gray-600 text-xl">Loading...</div></div>;
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
-      <div className="max-w-7xl mx-auto px-4 py-8">
-        {/* Back navigation */}
+    <div className="min-h-screen relative">
+      <div className="absolute inset-0 bg-cover bg-center bg-no-repeat" style={{ backgroundImage: 'url(/farm_page.jpg)' }} />
+      <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-white/10" />
+      <div className="relative z-10 max-w-7xl mx-auto px-6 lg:px-8 py-12">
         <button 
           onClick={() => navigate('/communities')} 
-          className="flex items-center gap-2 text-green-600 dark:text-green-600 hover:text-green-700 mb-2"
+          className="flex items-center gap-2 text-secondary hover:text-secondary/80 font-semibold mb-6 transition-all"
         >
-         Back to Communities
+          ← Back to Communities
         </button>
-        
+
         {/* header with community name and action buttons */}
-        <div className="flex items-center justify-between mb-6">
-          <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
+        <div className="flex items-center justify-between mb-8">
+          <h1 className="text-4xl md:text-5xl font-bold text-gray-900">
             {community.name}
           </h1>
           
@@ -113,14 +114,14 @@ const CommunityDetails = () => {
             {/* join/leave button */}
             <button 
               onClick={handleJoin} 
-              className="px-4 py-2 rounded-lg font-medium bg-green-600 text-white hover:bg-green-700"
+              className="px-6 py-3 rounded-full font-semibold bg-secondary text-white hover:bg-secondary/90 transition-all shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
             >
               {community.is_member ? 'Leave' : 'Join'}
             </button>
             {/* toggle chat visibility */}
             <button 
               onClick={() => setShowChat(!showChat)} 
-              className="px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700"
+              className="px-6 py-3 rounded-full font-semibold glass bg-white text-gray-700 hover:bg-gray-50 transition-all"
             >
               {showChat ? 'Hide Chat' : 'Show Chat'}
             </button>
@@ -129,13 +130,13 @@ const CommunityDetails = () => {
               <>
                 <button 
                   onClick={handleSave} 
-                  className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700"
+                  className="bg-secondary text-white px-6 py-3 rounded-full font-semibold hover:bg-secondary/90 transition-all shadow-lg"
                 >
                   Save
                 </button>
                 <button 
                   onClick={() => setEditing(false)} 
-                  className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50"
+                  className="px-6 py-3 rounded-full font-semibold glass bg-white text-gray-700 hover:bg-gray-50 transition-all"
                 >
                   Cancel
                 </button>
@@ -144,13 +145,13 @@ const CommunityDetails = () => {
               <>
                 <button 
                   onClick={() => setEditing(true)} 
-                  className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700"
+                  className="bg-primary text-white px-6 py-3 rounded-full font-semibold hover:bg-primary/90 transition-all shadow-lg"
                 >
                   Edit
                 </button>
                 <button 
                   onClick={handleDelete} 
-                  className="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700"
+                  className="bg-red-600 text-white px-6 py-3 rounded-full font-semibold hover:bg-red-700 transition-all shadow-lg"
                 >
                   Delete
                 </button>
@@ -160,9 +161,8 @@ const CommunityDetails = () => {
         </div>
         <div className="grid lg:grid-cols-3 gap-6">
           <div className="lg:col-span-2 space-y-6">
-            {/* Description card */}
-            <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6">
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+            <div className="glass bg-white/40 backdrop-blur-sm rounded-3xl shadow-lg p-8">
+              <label className="block text-lg font-semibold text-gray-900 mb-3">
                 Description
               </label>
               {editing ? (
@@ -170,29 +170,28 @@ const CommunityDetails = () => {
                   value={formData} 
                   onChange={(e) => setFormData(e.target.value)} 
                   rows={4} 
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white" 
+                  className="w-full px-4 py-3 border border-gray-200 rounded-2xl focus:ring-2 focus:ring-secondary focus:border-transparent" 
                 />
               ) : (
-                <p className="text-gray-700 dark:text-gray-300">
+                <p className="text-gray-600 leading-relaxed">
                   {community.description}
                 </p>
               )}
               
-              {/* it shows the number of community */}
-              <div className="grid grid-cols-2 gap-4 mt-6">
+              <div className="grid grid-cols-2 gap-6 mt-8">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">
                     Members
                   </label>
-                  <span className="text-lg font-medium text-gray-900 dark:text-white">
+                  <span className="text-2xl font-bold text-secondary">
                     {community.members_count || 0}
                   </span>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">
                     Created
                   </label>
-                  <p className="text-gray-600 dark:text-gray-400">
+                  <p className="text-gray-600">
                     {new Date(community.created_at).toLocaleDateString()}
                   </p>
                 </div>
@@ -206,13 +205,13 @@ const CommunityDetails = () => {
             
             {/* join prompt for non-members */}
             {showChat && !community.is_member && (
-              <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-8 text-center">
-                <p className="text-gray-600 dark:text-gray-400 mb-4">
+              <div className="glass bg-white/40 backdrop-blur-sm rounded-3xl shadow-lg p-12 text-center">
+                <p className="text-gray-600 text-lg mb-6">
                   Join this community to access the chat
                 </p>
                 <button 
                   onClick={handleJoin} 
-                  className="px-6 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700"
+                  className="px-8 py-4 bg-secondary text-white rounded-full font-semibold hover:bg-secondary/90 transition-all shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
                 >
                   Join Community
                 </button>
@@ -220,20 +219,20 @@ const CommunityDetails = () => {
             )}
           </div>
           <div className="space-y-6">
-            <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6">
-              <h3 className="font-semibold text-gray-900 dark:text-white mb-4">
+            <div className="glass bg-white/40 backdrop-blur-sm rounded-3xl shadow-lg p-6">
+              <h3 className="text-xl font-bold text-gray-900 mb-4">
                 Community Info
               </h3>
-              <div className="space-y-3 text-sm">
+              <div className="space-y-4">
                 <div>
-                  <span className="text-gray-500 dark:text-gray-400">Status:</span>
-                  <span className="ml-2 text-gray-900 dark:text-white">
+                  <span className="text-gray-500 font-medium">Status:</span>
+                  <span className="ml-2 text-gray-900 font-semibold">
                     {community.is_member ? 'Member' : 'Not a member'}
                   </span>
                 </div>
                 <div>
-                  <span className="text-gray-500 dark:text-gray-400">Category:</span>
-                  <span className="ml-2 text-gray-900 dark:text-white">
+                  <span className="text-gray-500 font-medium">Category:</span>
+                  <span className="ml-2 text-gray-900 font-semibold">
                     {community.category || 'General'}
                   </span>
                 </div>
