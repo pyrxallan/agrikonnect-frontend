@@ -13,7 +13,7 @@ const CommunityChat = ({ communityName }) => {
   };
 
   return (
-    <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm h-96 flex flex-col">
+    <div className="glass bg-white/40 backdrop-blur-sm rounded-lg shadow-sm h-96 flex flex-col">
       {/* Chat Header */}
       <div className="p-4 border-b border-gray-200 dark:border-gray-700">
         <div className="flex items-center justify-between">
@@ -44,7 +44,7 @@ const CommunityChat = ({ communityName }) => {
             onChange={(e) => setNewMessage(e.target.value)} 
             placeholder="Chat coming soon..." 
             disabled
-            className="flex-1 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400 text-sm" 
+            className="flex-1 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-700 text-gray-500 dark:text-gray-400 text-sm" 
           />
         </div>
       </form>
