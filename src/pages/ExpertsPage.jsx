@@ -1,12 +1,10 @@
 import React from 'react';
 import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
 import ExpertCard from '../components/ExpertCard';
 import { expertsService } from '../services/expertsService';
 
 // expert component that displays all experts with search and filter functionality
 const ExpertsPage = () => {
-  const navigate = useNavigate();
   const [experts, setExperts] = useState([]); // stores the complete list of experts from API
   const [loading, setLoading] = useState(true); // track data is being fetched from the server
   const [filtered, setFiltered] = useState([]); // stores the filtered results displayed on screen
@@ -71,44 +69,41 @@ const ExpertsPage = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
-        <div className="text-gray-600 dark:text-gray-400">Loading...</div>
+      <div className="min-h-screen relative flex items-center justify-center">
+        <div className="absolute inset-0 bg-cover bg-center bg-no-repeat" style={{ backgroundImage: 'url(/agricultural_expert_page.jpg)' }} />
+        <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-white/10" />
+        <div className="relative z-10 text-gray-600">Loading...</div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
-      <div className="max-w-7xl mx-auto px-4 py-8">
-        <button 
-          onClick={() => navigate(-1)} 
-           className="flex items-center gap-2 text-green-600 dark:text-green-600 hover:text-green-700 mb-3"
-        >
-          Back
-        </button>
-        
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
+    <div className="min-h-screen relative">
+      <div className="absolute inset-0 bg-cover bg-center bg-no-repeat" style={{ backgroundImage: 'url(/agricultural_expert_page.jpg)' }} />
+      <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-white/10" />
+      <div className="relative z-10 max-w-7xl mx-auto px-6 lg:px-8 py-12">
+        <div className="mb-12">
+          <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-3">
             Agricultural Experts
           </h1>
-          <p className="text-gray-600 dark:text-gray-400">
+          <p className="text-xl text-gray-600">
             Connect with certified agricultural experts and get professional advice
           </p>
         </div>
         
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6 mb-8">
+        <div className="glass bg-white/40 backdrop-blur-sm rounded-3xl shadow-lg p-6 mb-8">
           <div className="grid md:grid-cols-4 gap-4">
             <input 
               type="text" 
               placeholder="Search experts..." 
               value={search} 
               onChange={(e) => setSearch(e.target.value)} 
-              className="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-1 focus:ring-primary-500 bg-white dark:bg-gray-600 text-gray-900 dark:text-white" 
+              className=" galss bg-white/50 text-gray-700 w-full pl-10 pr-4 py-3 border rounded-full focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500" 
             />
             <select 
               value={location} 
               onChange={(e) => setLocation(e.target.value)} 
-              className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+              className="px-4 py-3 border rounded-full focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500"
             >
               <option value="">All Locations</option>
               {locations.map(loc => <option key={loc} value={loc}>{loc}</option>)}
@@ -116,14 +111,14 @@ const ExpertsPage = () => {
             <select 
               value={specialty} 
               onChange={(e) => setSpecialty(e.target.value)} 
-              className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+              className="px-4 py-3 border rounded-full focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500"
             >
               <option value="">All Specialties</option>
               {specialties.map(spec => <option key={spec} value={spec}>{spec}</option>)}
             </select>
             <button 
               onClick={() => { setSearch(''); setLocation(''); setSpecialty(''); }} 
-              className="px-4 py-2 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700"
+              className="px-4 py-3 glass bg-white text-gray-700 rounded-full font-semibold hover:bg-gray-50 transition-all focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 "
             >
               Clear
             </button>
@@ -131,7 +126,7 @@ const ExpertsPage = () => {
         </div>
         
         <div className="mb-6">
-          <p className="text-gray-600 dark:text-gray-400">
+          <p className="text-gray-600 font-medium">
             Showing {filtered.length} of {experts.length} experts
           </p>
         </div>
