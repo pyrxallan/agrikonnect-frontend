@@ -14,7 +14,7 @@ const Header = () => {
   const [mobileOpen, setMobileOpen] = useState(false);
 
   return (
-    <header className="glass fixed top-0 left-0 right-0 z-50 shadow-lg">
+    <header className="fixed top-0 left-0 right-0 z-50 shadow-lg bg-gradient-to-r from-gray-900 to-gray-400">
       <div className="w-full px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-20">
           <Link to="/" className="flex items-center gap-3">
