@@ -1,4 +1,4 @@
-const API_URL = "http://localhost:5000";
+const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
 
 const getAuthHeaders = () => {
   const token = localStorage.getItem("token");
@@ -17,7 +17,7 @@ export async function fetchInbox() {
     return res.json();
   } catch (error) {
     console.error('Inbox fetch error:', error);
-    throw error;
+    return [];
   }
 }
 
@@ -30,7 +30,7 @@ export async function fetchConversation(userId) {
     return res.json();
   } catch (error) {
     console.error('Conversation fetch error:', error);
-    throw error;
+    return [];
   }
 }
 
@@ -48,6 +48,6 @@ export async function sendMessage(receiverId, content) {
     return res.json();
   } catch (error) {
     console.error('Send message error:', error);
-    throw error;
+    return { success: false, error: 'Failed to send message' };
   }
 }
