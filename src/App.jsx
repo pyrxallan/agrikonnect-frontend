@@ -3,6 +3,7 @@ import Header from './components/layout/Header';
 import Footer from './components/layout/Footer';
 import HomePage from './pages/HomePage';
 import { LoginPage, RegisterPage } from './pages/auth';
+import Messages from './pages/Messages';
 import ProtectedRoute from './components/auth/ProtectedRoute';
 import FeedPage from './pages/posts/FeedPage';
 import CommunitiesPage from './pages/CommunitiesPage';
@@ -31,7 +32,6 @@ const HomeLayout = ({ children }) => (
 );
 
 // Placeholder components for routes not yet implemented
-const Messages = () => <div className="p-8">Messages Page - Coming Soon</div>;
 const Profile = () => <div className="p-8">Profile Page - Coming Soon</div>;
 const Notifications = () => <div className="p-8">Notifications Page - Coming Soon</div>;
 
