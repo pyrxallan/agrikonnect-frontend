@@ -1,0 +1,20 @@
+.notification-badge-container {
+  position: relative;
+  display: inline-block;
+  cursor: pointer;
+}
+
+.badge-count {
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  background-color: #ff4d4f;
+  color: white;
+  border-radius: 10px;
+  padding: 0 6px;
+  font-size: 12px;
+  font-weight: bold;
+  line-height: 20px;
+  border: 1px solid #fff;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
