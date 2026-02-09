@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom';
 import { useState } from 'react';
 import { useAppSelector, useAppDispatch } from '../../app/hooks';
 import { logout } from '../../features/auth/authSlice';
+import NotificationBadge from '../notifications/NotificationBadge';
 
 const Header = () => {
   const { user, token } = useAppSelector((state) => state.auth);
@@ -54,6 +55,7 @@ const Header = () => {
           <div className="hidden md:flex items-center gap-4">
             {token && user ? (
               <>
+                <NotificationBadge userId={user.id} />
                 <span className="text-white text-sm">Welcome, {user.first_name}!</span>
                 <Link
                   to="/profile"
