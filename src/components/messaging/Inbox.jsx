@@ -12,9 +12,7 @@ export default function Inbox({ onSelect, activeUserId }) {
         setLoading(true);
         const data = await fetchInbox();
         setConversations(data);
-        setError(null);
       } catch (err) {
-        setError('Failed to load inbox');
         console.error(err);
       } finally {
         setLoading(false);
@@ -45,7 +43,7 @@ export default function Inbox({ onSelect, activeUserId }) {
 
       {!loading && conversations.length === 0 && (
         <div className="p-8 text-center text-gray-500 text-sm">
-          No conversations yet
+          No conversations yet. Start chatting with farmers and experts!
         </div>
       )}
 
