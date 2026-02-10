@@ -4,11 +4,11 @@ import Footer from './components/layout/Footer';
 import HomePage from './pages/HomePage';
 import { LoginPage, RegisterPage } from './pages/auth';
 import ProtectedRoute from './components/auth/ProtectedRoute';
-import FeedPage from './pages/posts/FeedPage';
 import CommunitiesPage from './pages/CommunitiesPage';
+import ExpertsPage from './pages/ExpertsPage';
+import FeedPage from './pages/posts/FeedPage';
 import CommunityDetails from './pages/CommunityDetails';
 import CreateCommunity from './pages/CreateCommunity';
-import ExpertsPage from './pages/ExpertsPage';
 import ExpertProfilePage from './pages/ExpertProfilePage';
 import WeatherPage from './pages/WeatherPage';
 
