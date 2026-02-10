@@ -27,7 +27,7 @@ const NotificationDropdown = ({ userId, onClose, onMarkAllRead, onCountChange })
   const fetchNotifications = async () => {
     try {
       setLoading(true);
-      const data = await notificationService.getNotifications(userId, 1, false);
+      const data = await notificationService.getNotifications(1, false);
       setNotifications(data.notifications);
       onCountChange(data.unread_count);
     } catch (error) {

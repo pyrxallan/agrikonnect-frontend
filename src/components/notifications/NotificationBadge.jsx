@@ -12,7 +12,7 @@ const NotificationBadge = ({ userId }) => {
 
     const fetchUnreadCount = async () => {
       try {
-        const count = await notificationService.getUnreadCount(userId);
+        const count = await notificationService.getUnreadCount();
         setUnreadCount(count);
       } catch (error) {
         console.error('Failed to fetch unread count:', error);
@@ -27,7 +27,7 @@ const NotificationBadge = ({ userId }) => {
 
   const handleMarkAllRead = async () => {
     try {
-      await notificationService.markAllAsRead(userId);
+      await notificationService.markAllAsRead();
       setUnreadCount(0);
     } catch (error) {
       console.error('Failed to mark all as read:', error);

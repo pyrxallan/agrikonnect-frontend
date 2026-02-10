@@ -23,7 +23,6 @@ const NotificationsPage = () => {
     try {
       setLoading(true);
       const data = await notificationService.getNotifications(
-        user.id,
         page,
         filter === 'unread'
       );
@@ -38,7 +37,7 @@ const NotificationsPage = () => {
 
   const handleMarkAllRead = async () => {
     try {
-      await notificationService.markAllAsRead(user.id);
+      await notificationService.markAllAsRead();
       fetchNotifications();
     } catch (error) {
       console.error('Failed to mark all as read:', error);

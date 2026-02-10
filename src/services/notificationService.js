@@ -1,37 +1,30 @@
-import axios from 'axios';
-
-const NOTIFICATION_API_URL = import.meta.env.VITE_NOTIFICATION_URL || 'http://localhost:5001/api';
+import api from './api';
 
 export const notificationService = {
-  getNotifications: async (userId, page = 1, unreadOnly = false) => {
-    const response = await axios.get(`${NOTIFICATION_API_URL}/notifications/${userId}`, {
+  getNotifications: async (page = 1, unreadOnly = false) => {
+    const response = await api.get('/notifications', {
       params: { page, per_page: 20, unread_only: unreadOnly }
     });
     return response.data;
   },
 
-  getUnreadCount: async (userId) => {
-    const response = await axios.get(`${NOTIFICATION_API_URL}/notifications/${userId}/unread-count`);
+  getUnreadCount: async () => {
+    const response = await api.get('/notifications/unread-count');
     return response.data.count;
   },
 
   markAsRead: async (notificationId) => {
-    const response = await axios.put(`${NOTIFICATION_API_URL}/notifications/${notificationId}/read`);
+    const response = await api.put(`/notifications/${notificationId}/read`);
     return response.data;
   },
 
-  markAllAsRead: async (userId) => {
-    const response = await axios.put(`${NOTIFICATION_API_URL}/notifications/${userId}/read-all`);
+  markAllAsRead: async () => {
+    const response = await api.put('/notifications/read-all');
     return response.data;
   },
 
   deleteNotification: async (notificationId) => {
-    const response = await axios.delete(`${NOTIFICATION_API_URL}/notifications/${notificationId}`);
-    return response.data;
-  },
-
-  clearOldNotifications: async (userId) => {
-    const response = await axios.delete(`${NOTIFICATION_API_URL}/notifications/${userId}/clear-old`);
+    const response = await api.delete(`/notifications/${notificationId}`);
     return response.data;
   }
 };
