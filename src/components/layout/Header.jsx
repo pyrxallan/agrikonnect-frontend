@@ -44,6 +44,9 @@ const Header = () => {
             <Link to="/experts" className="text-white hover:text-secondary transition-colors font-medium">
               Experts
             </Link>
+            <Link to="/weather" className="text-white hover:text-secondary transition-colors font-medium">
+              Weather
+            </Link>
           </nav>
 
           <div className="hidden md:flex items-center gap-4">
