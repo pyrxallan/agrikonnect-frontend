@@ -1,52 +1,33 @@
-import { useState, useEffect } from 'react';
+import { useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { expertsService } from '../services/expertsService';
+import { useAppDispatch, useAppSelector } from '../app/hooks';
+import { fetchExpert, followExpert, unfollowExpert } from '../features/experts/expertsSlice';
 
 // expert profile page with detailed information and follow functionality
 const ExpertProfilePage = () => {
   const { id } = useParams(); // get the expert id from the url
   const navigate = useNavigate();
-  const [expert, setExpert] = useState(null);
-  const [loading, setLoading] = useState(true); // track the data that is being fetched
+  const dispatch = useAppDispatch();
+  const { current: expert, loading } = useAppSelector(state => state.experts);
 
   // fetch expert data on mount or when id changes
   useEffect(() => {
-    const fetchExpert = async () => {
-      try {
-        const data = await expertsService.getExpert(id);
-        setExpert(data);
-      } catch {
-        // fallback data if API fails to prevent app from crashing
-        setExpert({ 
-          id, 
-          name: 'Expert Name', 
-          title: 'Agricultural Specialist', 
-          location: 'Kenya', 
-          specialties: ['Farming', 'Agriculture'], 
-          followers: 0, 
-          posts: 0, 
-          rating: '4.5', 
-          bio: 'Expert in agricultural practices.', 
-          is_following: false 
-        });
-      } finally {
-        setLoading(false); // stop loading spinner
-      }
-    };
-    fetchExpert();
-  }, [id]);
+    dispatch(fetchExpert(id));
+  }, [dispatch, id]);
 
-  // handles follow/unfollow when button is clicked
-  const handleFollow = async () => {
-    try {
-      await (expert.is_following ? expertsService.unfollowExpert(id) : expertsService.followExpert(id));
-      setExpert(prev => ({ ...prev, is_following: !prev.is_following }));
-    } catch (err) {
-      console.error('Failed to follow/unfollow:', err);
-    }
+  const handleFollow = () => {
+    dispatch(expert.is_following ? unfollowExpert(id) : followExpert(id));
   };
 
-  if (loading) return <div className="min-h-screen relative flex items-center justify-center"><div className="absolute inset-0 bg-cover bg-center bg-no-repeat" style={{ backgroundImage: 'url(/agricultural_expert_page.jpg)' }} /><div className="absolute inset-0 bg-gradient-to-b from-white/20 to-white/10" /><div className="relative z-10 text-gray-600 text-xl">Loading...</div></div>;
+  if (loading) return (
+    <div className="min-h-screen relative flex items-center justify-center">
+      <div className="absolute inset-0 bg-cover bg-center bg-no-repeat" style={{ backgroundImage: 'url(/agricultural_expert_page.jpg)' }} />
+      <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-white/10" />
+      <div className="relative z-10 text-gray-600 text-xl">
+        Loading...
+      </div>
+    </div>
+  );
 
   return (
     <div className="min-h-screen relative">

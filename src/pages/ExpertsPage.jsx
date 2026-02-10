@@ -1,66 +1,32 @@
-import React from 'react';
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
+import { useAppDispatch, useAppSelector } from '../app/hooks';
+import { fetchExperts, followExpert, unfollowExpert } from '../features/experts/expertsSlice';
 import ExpertCard from '../components/ExpertCard';
-import { expertsService } from '../services/expertsService';
 
 // expert component that displays all experts with search and filter functionality
 const ExpertsPage = () => {
-  const [experts, setExperts] = useState([]); // stores the complete list of experts from API
-  const [loading, setLoading] = useState(true); // track data is being fetched from the server
-  const [filtered, setFiltered] = useState([]); // stores the filtered results displayed on screen
+  const dispatch = useAppDispatch();
+  const { list: experts, loading } = useAppSelector(state => state.experts); 
   const [search, setSearch] = useState(''); // stores search query typed by the user
   const [location, setLocation] = useState(''); // store selected location filter
   const [specialty, setSpecialty] = useState(''); // store selected specialty filter
 
   // fetch all experts on mount and only rund once
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const data = await expertsService.getExperts();
-        setExperts(data);
-      } catch (err) {
-        console.error('Failed to load experts:', err);
-        setExperts([]); // use empty array if API fails
-      } finally {
-        setLoading(false); // stop loading spinner
-      }
-    };
-    fetchData();
-  }, []);
+    dispatch(fetchExperts());
+  }, [dispatch]);
 
-  // re-filter experts whenever search/filter values change
-  useEffect(() => {
-    let result = experts;
-    // filter by name or title
-    if (search) {
-      result = result.filter(e => 
-        e.name.toLowerCase().includes(search.toLowerCase()) || 
-        e.title?.toLowerCase().includes(search.toLowerCase())
-      );
-    }
-    // filter by location
-    if (location) {
-      result = result.filter(e => e.location?.toLowerCase().includes(location.toLowerCase()));
-    }
-    // filter by specialty
-    if (specialty) {
-      result = result.filter(e => 
-        e.specialties?.some(s => s.toLowerCase().includes(specialty.toLowerCase()))
-      );
-    }
-    setFiltered(result);
-  }, [experts, search, location, specialty]);
+  const filteredExperts = experts.filter(e => {
+    const matchesSearch = search ? (e.name.toLowerCase().includes(search.toLowerCase()) || e.title?.toLowerCase().includes(search.toLowerCase())) : true;
+    const matchesLocation = location ? e.location?.toLowerCase().includes(location.toLowerCase()) : true;
+    const matchesSpecialty = specialty ? e.specialties?.some(s => s.toLowerCase().includes(specialty.toLowerCase())) : true;
+    return matchesSearch && matchesLocation && matchesSpecialty;
+  });
 
   // handles follow/unfollow for an expert when button clicks
-  const handleFollow = async (id) => {
+  const handleFollow = (id) => {
     const expert = experts.find(e => e.id === id);
-    try {
-      await (expert.is_following ? expertsService.unfollowExpert(id) : expertsService.followExpert(id));
-      // updates follow status in state
-      setExperts(prev => prev.map(e => e.id === id ? { ...e, is_following: !e.is_following } : e));
-    } catch (err) {
-      console.error('Failed to follow/unfollow:', err);
-    }
+    dispatch(expert.is_following ? unfollowExpert(id) : followExpert(id));
   };
 
   // extract unique locations and specialties for filter dropdowns
@@ -127,12 +93,12 @@ const ExpertsPage = () => {
         
         <div className="mb-6">
           <p className="text-gray-600 font-medium">
-            Showing {filtered.length} of {experts.length} experts
+            Showing {filteredExperts.length} of {experts.length} experts
           </p>
         </div>
         
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {filtered.map((expert) => (
+          {filteredExperts.map((expert) => (
             <ExpertCard key={expert.id} expert={expert} onFollow={handleFollow} />
           ))}
         </div>
