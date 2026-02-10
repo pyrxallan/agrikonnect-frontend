@@ -10,6 +10,7 @@ import CommunityDetails from './pages/CommunityDetails';
 import CreateCommunity from './pages/CreateCommunity';
 import ExpertsPage from './pages/ExpertsPage';
 import ExpertProfilePage from './pages/ExpertProfilePage';
+import WeatherPage from './pages/WeatherPage';
 
 const Layout = ({ children }) => (
   <>
@@ -47,6 +48,7 @@ function App() {
       <Route path="/communities/:id" element={<ProtectedRoute><Layout><CommunityDetails /></Layout></ProtectedRoute>} />
       <Route path="/experts" element={<ProtectedRoute><Layout><ExpertsPage /></Layout></ProtectedRoute>} />
       <Route path="/experts/:id" element={<ProtectedRoute><Layout><ExpertProfilePage /></Layout></ProtectedRoute>} />
+      <Route path="/weather" element={<Layout><WeatherPage /></Layout>} />
       <Route path="/messages" element={<ProtectedRoute><Layout><Messages /></Layout></ProtectedRoute>} />
       <Route path="/profile" element={<ProtectedRoute><Layout><Profile /></Layout></ProtectedRoute>} />
       <Route path="/notifications" element={<ProtectedRoute><Layout><Notifications /></Layout></ProtectedRoute>} />
