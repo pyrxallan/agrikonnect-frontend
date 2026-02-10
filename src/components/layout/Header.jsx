@@ -47,6 +47,11 @@ const Header = () => {
             <Link to="/weather" className="text-white hover:text-secondary transition-colors font-medium">
               Weather
             </Link>
+              {token && user && (
+                <Link to="/messages" className="text-white hover:text-secondary transition-colors font-medium">
+                  Messages
+                </Link>
+              )}
           </nav>
 
           <div className="hidden md:flex items-center gap-4">
@@ -149,6 +154,15 @@ const Header = () => {
                     </Link>
                   </>
                 )}
+                  {token && user && (
+                    <Link 
+                      to="/messages" 
+                      className="text-white hover:text-secondary hover:bg-white/10 px-4 py-2 rounded-md transition-colors"
+                      onClick={() => setMobileOpen(false)}
+                    >
+                      Messages
+                    </Link>
+                  )}
               </div>
             </nav>
           </div>
