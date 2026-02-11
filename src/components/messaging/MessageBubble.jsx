@@ -1,4 +1,4 @@
-export default function MessageBubble({ message, isOwn }) {
+export default function MessageBubble({ message, isOwn, senderName }) {
   const formattedTime = message.timestamp 
     ? new Date(message.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
     : '';
@@ -12,6 +12,9 @@ export default function MessageBubble({ message, isOwn }) {
             : "bg-gray-200 text-text rounded-bl-none"
         }}`}
       >
+        {!isOwn && senderName && (
+          <p className="text-xs font-semibold text-gray-700 mb-1">{senderName}</p>
+        )}
         <p className="break-words">{message.content}</p>
         {formattedTime && (
           <p className={`text-xs mt-1 ${isOwn ? 'text-white/70' : 'text-gray-600'}`}>

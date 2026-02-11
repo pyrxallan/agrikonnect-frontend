@@ -2,27 +2,33 @@ import { useEffect, useState } from "react";
 import { fetchConversation, sendMessage } from "../../services/messagesApi";
 import MessageBubble from "./MessageBubble";
 
-export default function ChatView({ userId }) {
+export default function ChatView({ userId, userName }) {
   const [messages, setMessages] = useState([]);
   const [text, setText] = useState("");
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [sending, setSending] = useState(false);
 
   useEffect(() => {
     if (!userId) return;
 
+    setLoading(true);
+    let isMounted = true;
+
     const loadMessages = async () => {
       try {
-        setLoading(true);
         const data = await fetchConversation(userId);
-        setMessages(data);
-        setError(null);
+        if (isMounted) {
+          setMessages(data || []);
+          setError(null);
+        }
       } catch (err) {
-        setError('Failed to load conversation');
-        console.error(err);
+        if (isMounted) {
+          setError('Failed to load conversation');
+          setMessages([]);
+        }
       } finally {
-        setLoading(false);
+        if (isMounted) setLoading(false);
       }
     };
 
@@ -30,7 +36,10 @@ export default function ChatView({ userId }) {
 
     const interval = setInterval(loadMessages, 3000);
 
-    return () => clearInterval(interval);
+    return () => {
+      isMounted = false;
+      clearInterval(interval);
+    };
   }, [userId]);
 
   const handleSend = async () => {
@@ -95,6 +104,7 @@ export default function ChatView({ userId }) {
               key={msg.id}
               message={msg}
               isOwn={msg.is_own}
+              senderName={msg.sender_name}
             />
           ))
         )}
