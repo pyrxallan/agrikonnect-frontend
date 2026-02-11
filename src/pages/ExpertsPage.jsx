@@ -4,7 +4,7 @@ import { fetchExperts, followExpert, unfollowExpert } from '../features/experts/
 import ExpertCard from '../components/ExpertCard';
 
 // expert component that displays all experts with search and filter functionality
-const ExpertsPage = () => {
+  const ExpertsPage = () => {
   const dispatch = useAppDispatch();
   const { list: experts, loading } = useAppSelector(state => state.experts); 
   const [search, setSearch] = useState(''); // stores search query typed by the user
