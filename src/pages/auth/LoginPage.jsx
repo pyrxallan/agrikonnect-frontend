@@ -18,11 +18,15 @@ const LoginPage = () => {
     formState: { errors },
   } = useForm();
 
+  // Redirect after successful login
   useEffect(() => {
-    if (token) {
-      navigate(from, { replace: true });
+    if (token && !isLoading) {
+      const timer = setTimeout(() => {
+        navigate(from, { replace: true });
+      }, 100);
+      return () => clearTimeout(timer);
     }
-  }, [token, navigate, from]);
+  }, [token, isLoading, navigate, from]);
 
   useEffect(() => {
     return () => {

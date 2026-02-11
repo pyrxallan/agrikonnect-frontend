@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom';
 import { useState } from 'react';
 import { useAppSelector, useAppDispatch } from '../../app/hooks';
 import { logout } from '../../features/auth/authSlice';
+import NotificationBadge from '../notifications/NotificationBadge';
 
 const Header = () => {
   const { user, token } = useAppSelector((state) => state.auth);
@@ -14,7 +15,7 @@ const Header = () => {
   const [mobileOpen, setMobileOpen] = useState(false);
 
   return (
-    <header className="glass fixed top-0 left-0 right-0 z-50 shadow-lg">
+    <header className="fixed top-0 left-0 right-0 z-50 shadow-lg bg-gradient-to-r from-gray-900 to-gray-400">
       <div className="w-full px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-20">
           <Link to="/" className="flex items-center gap-3">
@@ -44,17 +45,28 @@ const Header = () => {
             <Link to="/experts" className="text-white hover:text-secondary transition-colors font-medium">
               Experts
             </Link>
+            <Link to="/weather" className="text-white hover:text-secondary transition-colors font-medium">
+              Weather
+            </Link>
+              {token && user && (
+                <Link to="/messages" className="text-white hover:text-secondary transition-colors font-medium">
+                  Messages
+                </Link>
+              )}
           </nav>
 
           <div className="hidden md:flex items-center gap-4">
             {token && user ? (
               <>
-                <span className="text-white text-sm">Welcome, {user.first_name}!</span>
-                <Link
-                  to="/profile"
-                  className="text-white hover:text-secondary transition-colors font-medium"
-                >
-                  Profile
+                <NotificationBadge userId={user.id} />
+                <Link to="/profile" className="flex items-center gap-3 bg-white/10 backdrop-blur-sm rounded-full px-4 py-2 hover:bg-white/20 transition-colors cursor-pointer">
+                  <div className="w-10 h-10 rounded-full bg-gradient-to-br from-primary to-secondary flex items-center justify-center text-white font-bold">
+                    {user.first_name[0]}{user.last_name[0]}
+                  </div>
+                  <div className="text-left">
+                    <div className="text-white font-semibold text-sm">{user.first_name} {user.last_name}</div>
+                    <div className="text-gray-300 text-xs">{user.email}</div>
+                  </div>
                 </Link>
                 <button
                   onClick={handleLogout}
@@ -146,6 +158,15 @@ const Header = () => {
                     </Link>
                   </>
                 )}
+                  {token && user && (
+                    <Link 
+                      to="/messages" 
+                      className="text-white hover:text-secondary hover:bg-white/10 px-4 py-2 rounded-md transition-colors"
+                      onClick={() => setMobileOpen(false)}
+                    >
+                      Messages
+                    </Link>
+                  )}
               </div>
             </nav>
           </div>
