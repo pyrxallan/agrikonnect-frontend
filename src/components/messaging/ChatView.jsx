@@ -2,10 +2,10 @@ import { useEffect, useState } from "react";
 import { fetchConversation, sendMessage } from "../../services/messagesApi";
 import MessageBubble from "./MessageBubble";
 
-export default function ChatView({ userId, userName }) {
+export default function ChatView({ userId }) {
   const [messages, setMessages] = useState([]);
   const [text, setText] = useState("");
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [sending, setSending] = useState(false);
 

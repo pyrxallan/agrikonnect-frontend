@@ -5,12 +5,14 @@ import HomePage from './pages/HomePage';
 import { LoginPage, RegisterPage } from './pages/auth';
 import Messages from './pages/Messages';
 import ProtectedRoute from './components/auth/ProtectedRoute';
-import FeedPage from './pages/posts/FeedPage';
 import CommunitiesPage from './pages/CommunitiesPage';
+import ExpertsPage from './pages/ExpertsPage';
+import FeedPage from './pages/posts/FeedPage';
 import CommunityDetails from './pages/CommunityDetails';
 import CreateCommunity from './pages/CreateCommunity';
-import ExpertsPage from './pages/ExpertsPage';
 import ExpertProfilePage from './pages/ExpertProfilePage';
+import WeatherPage from './pages/WeatherPage';
+import ProfilePage from './pages/ProfilePage';
 
 const Layout = ({ children }) => (
   <>
@@ -32,7 +34,6 @@ const HomeLayout = ({ children }) => (
 );
 
 // Placeholder components for routes not yet implemented
-const Profile = () => <div className="p-8">Profile Page - Coming Soon</div>;
 const Notifications = () => <div className="p-8">Notifications Page - Coming Soon</div>;
 
 function App() {
@@ -48,7 +49,9 @@ function App() {
       <Route path="/experts" element={<ProtectedRoute><Layout><ExpertsPage /></Layout></ProtectedRoute>} />
       <Route path="/experts/:id" element={<ProtectedRoute><Layout><ExpertProfilePage /></Layout></ProtectedRoute>} />
       <Route path="/messages" element={<ProtectedRoute><Layout><Messages /></Layout></ProtectedRoute>} />
-      <Route path="/profile" element={<ProtectedRoute><Layout><Profile /></Layout></ProtectedRoute>} />
+      <Route path="/weather" element={<Layout><WeatherPage /></Layout>} />
+      <Route path="/profile" element={<ProtectedRoute><Layout><ProfilePage /></Layout></ProtectedRoute>} />
+      <Route path="/profile/:userId" element={<ProtectedRoute><Layout><ProfilePage /></Layout></ProtectedRoute>} />
       <Route path="/notifications" element={<ProtectedRoute><Layout><Notifications /></Layout></ProtectedRoute>} />
     </Routes>
   );

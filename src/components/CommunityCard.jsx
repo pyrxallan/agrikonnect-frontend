@@ -17,38 +17,27 @@ const CommunityCard = ({ community, onJoin }) => (
       </div>
       {/* Link to community details page */}
       <Link to={`/communities/${community.id}`}>
-        <h3 className="font-bold text-lg text-gray-900 dark:text-white mb-2 hover:text-primary-600">
+        <h3 className="font-bold text-xl text-gray-900 mb-2 hover:text-secondary transition-colors ">
           {community.name}
         </h3>
       </Link>
       
-      <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
+      <p className="text-gray-600 mb-4 leading-relaxed">
         {community.description}
       </p>
     </div>
     
-    <div className="px-6 py-3 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-700">
-      {/* Member count */}
-      <div className="flex gap-4 text-sm text-gray-500 dark:text-gray-400 mb-3">
-        <span>Members {community.members}</span>
+    <div className="px-6 py-4 ">
+      <div className="flex gap-4 text-sm text-gray-600 font-medium mb-4">
+        <span>Members {community.members_count || community.members || 0}</span>
       </div>
       
-      <div className="flex gap-2">
-        <Link 
-          to={`/communities/${community.id}`} 
-          className="flex-1 px-4 py-2 text-center border border-primary-600 text-primary-600 rounded-lg hover:bg-primary-50 text-sm font-medium"
-        >
-          View
-        </Link>
-        {/* button that lets user shows if they have already joined, it runs the onjoin  function and passed the community id*/}
-        <button 
-          onClick={() => onJoin(community.id)} 
-          className="flex-1 px-4 py-2 rounded-lg text-sm font-medium bg-green-600 text-white hover:bg-green-700"
-        >
-           {/* ternary operator that shows "Joined" if user is already a member, otherwise "Join" */}
-          {community.isJoined ? 'Joined' : 'Join'}
-        </button>
-      </div>
+      <Link 
+        to={`/communities/${community.id}`} 
+        className="block w-full px-4 py-2.5 text-center glass bg-white text-gray-700 rounded-full hover:bg-gray-50 font-semibold transition-all"
+      >
+        View
+      </Link>
     </div>
   </div>
 );
