@@ -47,9 +47,6 @@ const HomePage = () => {
                   <Link to="/register" className="bg-secondary text-white px-8 py-4 rounded-full font-semibold hover:bg-secondary/90 transition-all shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 flex items-center gap-2">
                     Start Free Today <span>→</span>
                   </Link>
-                  <Link to="/login" className="glass-dark text-white px-8 py-4 rounded-full font-semibold hover:bg-white/20 transition-all">
-                    Sign In
-                  </Link>
                 </div>
               )}
 
@@ -60,7 +57,7 @@ const HomePage = () => {
                   <img src="/farmer-4.jpg" alt="" className="w-12 h-12 rounded-full border-2 border-white object-cover" />
                 </div>
                 <div className="text-white">
-                  <div className="font-bold">100+ Farmers</div>
+                  <div className="font-bold">10,000+ Farmers</div>
                   <div className="text-sm text-gray-300">Growing together</div>
                 </div>
               </div>
@@ -74,7 +71,7 @@ const HomePage = () => {
                 </div>
                 <div className="space-y-4 pt-8">
                   <img src="/farmer-3.jpg" alt="Farmer" className="rounded-2xl shadow-2xl w-full h-48 object-cover" />
-                  <img src="/farmer-5.jpg" alt="Farmer" className="rounded-2xl shadow-2xl w-full h-64 object-cover" />
+                  <img src="/farmer-6.jpg" alt="Farmer" className="rounded-2xl shadow-2xl w-full h-64 object-cover" />
                 </div>
               </div>
             </div>
@@ -87,15 +84,15 @@ const HomePage = () => {
         <div className="w-full px-6 lg:px-8">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8 max-w-7xl mx-auto">
             <div className="text-center">
-              <div className="text-5xl font-bold text-secondary mb-2">100+</div>
+              <div className="text-5xl font-bold text-secondary mb-2">10,000+</div>
               <div className="text-gray-600 font-medium">Active Farmers</div>
             </div>
             <div className="text-center">
-              <div className="text-5xl font-bold text-secondary mb-2">50+</div>
+              <div className="text-5xl font-bold text-secondary mb-2">500+</div>
               <div className="text-gray-600 font-medium">Expert Advisors</div>
             </div>
             <div className="text-center">
-              <div className="text-5xl font-bold text-secondary mb-2">20+</div>
+              <div className="text-5xl font-bold text-secondary mb-2">100+</div>
               <div className="text-gray-600 font-medium">Communities</div>
             </div>
             <div className="text-center">
@@ -246,14 +243,14 @@ const HomePage = () => {
             </div>
             <div className="glass-dark p-8 rounded-3xl">
               <div className="flex items-center gap-4 mb-6">
-                <img src="/farmer-5.jpg" alt="" className="w-16 h-16 rounded-full border-4 border-white object-cover" />
+                <img src="/farmer-6.jpg" alt="" className="w-16 h-16 rounded-full border-4 border-white object-cover" />
                 <div>
                   <div className="font-bold text-lg">Samoe Will</div>
                   <div className="text-white/80">Wheat Farmer, Narok</div>
                 </div>
               </div>
               <p className="text-lg text-white/90 leading-relaxed">
-                "The disease management tips I got from experts saved my entire wheat plantation. Agrikonnect is a lifesaver for farmers like me."
+                "The disease management tips I got from experts saved my entire coffee plantation. Agrikonnect is a lifesaver for farmers like me."
               </p>
             </div>
           </div>
