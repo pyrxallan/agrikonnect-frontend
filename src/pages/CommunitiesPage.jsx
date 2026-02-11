@@ -19,17 +19,21 @@ const CommunitiesPage = () => {
   }, [dispatch]);
 
   // Handle join/leave community action when the button is clicked and it take community id as a parameter
-  const handleJoin = (id) => {
+  const handleJoin = async (id) => {
     const community = communities.find(c => c.id === id);
-    dispatch(community.isJoined ? leaveCommunity(id) : joinCommunity(id));
+    const isMember = community.is_member || community.isJoined;
+    await dispatch(isMember ? leaveCommunity(id) : joinCommunity(id));
+    // Refetch to ensure UI is in sync
+    dispatch(fetchCommunities());
   };
 
   // Filter communities by search term and active tab, it also creata a new array containing only communities that matches the criteria
   const filteredCommunities = communities.filter(community => {
     const matchesSearch = community.name.toLowerCase().includes(search.toLowerCase()) || 
                          community.description.toLowerCase().includes(search.toLowerCase());
-    if (activeTab === 'my') return matchesSearch && community.isJoined;
-    if (activeTab === 'recommended') return matchesSearch && !community.isJoined;
+    const isMember = community.is_member || community.isJoined;
+    if (activeTab === 'my') return matchesSearch && isMember;
+    if (activeTab === 'recommended') return matchesSearch && !isMember;
     return matchesSearch;
   });
 
@@ -103,8 +107,7 @@ const CommunitiesPage = () => {
           {filteredCommunities.map((community) => (
             <CommunityCard 
               key={community.id} 
-              community={community} 
-              onJoin={handleJoin} 
+              community={community}
             />
           ))}
         </div>

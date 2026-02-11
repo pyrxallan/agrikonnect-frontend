@@ -29,6 +29,16 @@ const ExpertProfilePage = () => {
     </div>
   );
 
+  if (!expert) return (
+    <div className="min-h-screen relative flex items-center justify-center">
+      <div className="absolute inset-0 bg-cover bg-center bg-no-repeat" style={{ backgroundImage: 'url(/agricultural_expert_page.jpg)' }} />
+      <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-white/10" />
+      <div className="relative z-10 text-gray-600 text-xl">
+        Expert not found
+      </div>
+    </div>
+  );
+
   return (
     <div className="min-h-screen relative">
       <div className="absolute inset-0 bg-cover bg-center bg-no-repeat" style={{ backgroundImage: 'url(/agricultural_expert_page.jpg)' }} />
@@ -91,8 +101,8 @@ const ExpertProfilePage = () => {
             </div>
           </div>
           
-          {/* statistics section that shows followers, posts and rating */}
-          <div className="grid grid-cols-3 gap-4 mb-6 p-4 rounded-2xl">
+          {/* statistics section that shows followers and posts */}
+          <div className="grid grid-cols-2 gap-4 mb-6 p-4 rounded-2xl">
             <div className="text-center">
               <div className="text-2xl font-bold text-secondary">
                 {expert.followers}
@@ -104,12 +114,6 @@ const ExpertProfilePage = () => {
                 {expert.posts}
               </div>
               <div className="text-sm text-gray-600">Posts</div>
-            </div>
-            <div className="text-center">
-              <div className="text-2xl font-bold text-secondary">
-                {expert.rating}
-              </div>
-              <div className="text-sm text-gray-600">Rating</div>
             </div>
           </div>
 

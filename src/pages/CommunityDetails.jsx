@@ -68,22 +68,26 @@ const CommunityDetails = () => {
   // toggle membership: join if not member, leave if member
   const handleJoin = async () => {
     try {
-      const response = community.is_member 
-        ? await communitiesService.leaveCommunity(id) 
-        : await communitiesService.joinCommunity(id);
-      if (response.community) {
-        // update membership status and member count
-        setCommunity(prev => ({ 
-          ...prev, 
-          is_member: !community.is_member, 
-          members_count: response.community.members 
-        }));
-      }
+      await (community.is_member 
+        ? communitiesService.leaveCommunity(id) 
+        : communitiesService.joinCommunity(id));
+      
+      // refetch community to get updated data
+      const updated = await communitiesService.getCommunity(id);
+      setCommunity({ 
+        ...updated, 
+        is_member: updated.is_member || updated.isJoined, 
+        members_count: updated.members_count || updated.members 
+      });
     } catch (err) {
-      // re-fetch if state is out of sync to prevent the 400 bad request error
-      if (err.response?.status === 400) {
-        setCommunity(await communitiesService.getCommunity(id));
-      }
+      console.error('Failed to update membership:', err);
+      // re-fetch on error to sync state
+      const data = await communitiesService.getCommunity(id);
+      setCommunity({ 
+        ...data, 
+        is_member: data.is_member || data.isJoined, 
+        members_count: data.members_count || data.members 
+      });
     }
   };
 

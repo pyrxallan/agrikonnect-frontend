@@ -40,7 +40,7 @@ export const communitiesService = {
 
   // leave a community
   leaveCommunity: async (id) => {
-    const response = await api.post(`/communities/${id}/leave`);
+    const response = await api.delete(`/communities/${id}/join`);
     return response.data;
   }
 };
