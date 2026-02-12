@@ -7,7 +7,7 @@ const CommunityCard = ({ community }) => (
       <div className="flex justify-between items-start mb-4">
         {/* Display category badge if available */}
         {community.category && (
-          <span className="px-3 py-1 bg-secondary/10 text-secondary text-xs font-semibold rounded-full">
+          <span className="px-3 py-1 bg-secondary/10 text-secondary font-semibold text-xs rounded-full">
             {community.category}
           </span>
         )}

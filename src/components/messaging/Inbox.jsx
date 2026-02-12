@@ -9,7 +9,6 @@ export default function Inbox({ onSelect, activeUserId, onNewChat }) {
   useEffect(() => {
     const loadInbox = async () => {
       try {
-        setLoading(true);
         const data = await fetchInbox();
         setConversations(data || []);
         setError(null);
@@ -67,7 +66,7 @@ export default function Inbox({ onSelect, activeUserId, onNewChat }) {
         return (
           <div
             key={conv.user_id}
-            onClick={() => onSelect(conv.user_id)}
+            onClick={() => onSelect(conv.user_id, conv.username)}
             className={`p-4 border-b border-white/10 cursor-pointer transition-all duration-200 ${
               activeUserId === conv.user_id
                 ? 'bg-secondary/20 border-l-4 border-l-secondary'

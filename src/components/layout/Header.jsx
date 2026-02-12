@@ -119,6 +119,15 @@ const Header = () => {
               >
                 Experts
               </Link>
+              {token && user && (
+                <Link 
+                  to="/messages" 
+                  className="text-white hover:text-secondary hover:bg-white/10 px-4 py-2 rounded-md transition-colors"
+                  onClick={() => setMobileOpen(false)}
+                >
+                  Messages
+                </Link>
+              )}
               
               <div className="pt-4 border-t border-white/20 space-y-2">
                 {token && user ? (
