@@ -1,242 +1,377 @@
-//postslice.js
-
-import { createSlice , createAsyncThunk } from "@reduxjs/toolkit";
+// postslice.js
+import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import api from "../../services/api";
 
-const USE_MOCKS = false;
+// Constants & Config
+const USE_MOCK_DATA = false;
+const STORAGE_KEY = "agrikonnect_offline_posts";
 
-const MOCK_POSTS = [
-  {
-    id: 1,
-    title: 'Maize field update',
-    content: 'Sprayed today after early signs of leaf blight. Any tips on follow‑up care?',
-    imageUrl: 'https://images.unsplash.com/photo-1501004318641-b39e6451bec6?q=80&w=1200&auto=format&fit=crop',
-    author: { id: 'u1', name: 'Samuel K.' },
-    createdAt: '2026-02-06T09:15:00.000Z',
-    likeCount: 12,
-    isLiked: false,
-    comments: [
-      { id: 'c1', author: 'Dr. Amina', content: 'Monitor for 7 days and reapply if needed.' },
-    ],
-  },
-  {
-    id: 2,
-    title: 'Irrigation question',
-    content: 'What’s the best schedule for drip irrigation on sandy soil?',
-    imageUrl: '',
-    author: { id: 'u2', name: 'Faith M.' },
-    createdAt: '2026-02-05T17:40:00.000Z',
-    likeCount: 5,
-    isLiked: true,
-    comments: [],
-  },
-];
+// Helper Functions
 
-//init state
-const initialState = {
-    posts: [],
-    loading: false,
-    error: null,
-    currentPage: 1,
-    totalPages: 1,
-    hasMore: true,
+// Get posts from local storage
+const getOfflinePosts = () => {
+  try {
+    const data = localStorage.getItem(STORAGE_KEY);
+    if (!data) return [];
+    const parsed = JSON.parse(data);
+    // Ensure we mark them as offline-only
+    return parsed.map((p) => ({ ...p, isLocal: true }));
+  } catch (err) {
+    console.error("Failed to load offline posts:", err);
+    return [];
+  }
 };
 
-//fetch posts async thunk
+// Save posts to local storage
+const saveOfflinePosts = (posts) => {
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(posts));
+  } catch (err) {
+    console.error("Failed to save offline posts:", err);
+  }
+};
+
+// Helper to format the author object consistently
+const formatAuthor = (rawPost, currentUser) => {
+  // If anonymous, return early
+  if (rawPost.isAnonymous || rawPost.is_anonymous) {
+    return { id: rawPost.author_id || rawPost.authorId, name: "Anonymous" };
+  }
+
+  let authorData = rawPost.author || rawPost.user || {};
+
+  // Handle if author is just a string ID
+  if (typeof authorData === "string") {
+    authorData = { name: authorData };
+  }
+
+  // Determine name
+  let name = authorData.name || authorData.username;
+  
+  if (!name) {
+    const first = authorData.first_name || authorData.firstName || "";
+    const last = authorData.last_name || authorData.lastName || "";
+    name = `${first} ${last}`.trim();
+  }
+
+  // Fallback: check if the current user owns this post
+  const authorId = rawPost.author_id || rawPost.authorId || rawPost.user_id;
+  if (!name && currentUser && String(authorId) === String(currentUser.id)) {
+    name = currentUser.name || "You";
+  }
+
+  return { ...authorData, id: authorId, name: name || "Unknown User" };
+};
+
+// Main function to clean up post data from the API
+const standardizePost = (rawPost, currentUser) => {
+  if (!rawPost) return null;
+
+  const isLocal = !!(
+    rawPost.isLocal ||
+    rawPost.clientId ||
+    String(rawPost.id).startsWith("local-")
+  );
+
+  const author = formatAuthor(rawPost, currentUser);
+
+  return {
+    ...rawPost,
+    author,
+    isLocal,
+    isRemote: !isLocal,
+    isAnonymous: !!(rawPost.isAnonymous || rawPost.is_anonymous),
+    createdAt: rawPost.createdAt || rawPost.created_at,
+    updatedAt: rawPost.updatedAt || rawPost.updated_at,
+    // Handle different API field names for likes
+    likeCount: rawPost.likeCount || rawPost.likes_count || rawPost.likes?.length || 0,
+    isLiked: !!(rawPost.isLiked || rawPost.is_liked || rawPost.user_liked),
+    // Handle different API field names for comments
+    commentCount: rawPost.commentCount || rawPost.comments_count || rawPost.comments?.length || 0,
+  };
+};
+
+// Helper to extract array of posts from various API response shapes
+const getPostsArray = (response) => {
+  const data = response.data;
+  if (Array.isArray(data)) return data;
+  if (Array.isArray(data.posts)) return data.posts;
+  if (Array.isArray(data.data)) return data.data;
+  if (Array.isArray(data.results)) return data.results;
+  return [];
+};
+
+const initialState = {
+  items: [],
+  isLoading: false,
+  errorMsg: null,
+  page: 1,
+  maxPages: 1,
+  hasMoreItems: false,
+};
+
 export const fetchPosts = createAsyncThunk(
-  'posts/fetchPosts',
-  async (page = 1, { rejectWithValue }) => {
+  "posts/loadPosts",
+  async (pageNum = 1, { rejectWithValue, getState }) => {
+    const user = getState().auth?.user;
+
+    if (USE_MOCK_DATA) {
+      return {
+        posts: MOCK_DATA.map((p) => standardizePost(p, user)),
+        page: 1,
+        totalPages: 1,
+      };
+    }
+
     try {
-      if (USE_MOCKS) {
+      const response = await api.get(`/posts?page=${pageNum}`);
+      const data = response.data;
+      const rawPosts = Array.isArray(data) ? data : (data.posts || data.data || data.results || []);
+      
+      // Merge with offline posts if on first page
+      let finalPosts = rawPosts.map((p) => standardizePost(p, user));
+      
+      const totalPages = (typeof data === 'object' && !Array.isArray(data)) ? (data.totalPages || data.pages || 1) : 1;
+
+      return {
+        posts: finalPosts,
+        page: pageNum,
+        totalPages,
+      };
+    } catch (err) {
+      // Fallback to offline mode if server error
+      if (err.response?.status >= 500) {
+        const offlinePosts = getOfflinePosts();
         return {
-          posts: MOCK_POSTS,
+          posts: offlinePosts.map((p) => standardizePost(p, user)),
           page: 1,
           totalPages: 1,
         };
       }
-      const response = await api.get(`/posts?page=${page}`);
-      return response.data;
-    } catch (error) {
-      return rejectWithValue(error.response?.data || 'Failed to fetch posts');
+      return rejectWithValue(err.response?.data?.message || "Could not load posts");
     }
   }
 );
 
-//create posts slice
 export const createPost = createAsyncThunk(
-  'posts/createPost',
-  async ({ content, imageFile }, { rejectWithValue }) => {
+  "posts/createNew",
+  async ({ content, imageFile, isAnonymous }, { rejectWithValue, getState }) => {
+    const user = getState().auth?.user;
+
     try {
-      if (USE_MOCKS) {
-        return {
-          id: Date.now(),
-          title: '',
+      let response;
+      
+      if (imageFile) {
+        const payload = new FormData();
+        payload.append("content", content);
+        payload.append("is_anonymous", isAnonymous ? "true" : "false");
+        payload.append("image", imageFile);
+        response = await api.post("/posts", payload);
+      } else {
+        response = await api.post("/posts", {
           content,
-          imageUrl: imageFile ? URL.createObjectURL(imageFile) : '',
-          author: { id: 'u0', name: 'You' },
+          is_anonymous: isAnonymous
+        });
+      }
+      
+      const newPost = response.data?.post || response.data;
+      return standardizePost(newPost, user);
+
+    } catch (err) {
+      // Create a local post if network fails
+      if (err.response?.status === 405 || err.message === "Network Error") {
+        const tempPost = {
+          id: `local-${Date.now()}`,
+          clientId: `local-${Date.now()}`,
+          content,
+          imageUrl: imageFile ? URL.createObjectURL(imageFile) : null,
+          isAnonymous,
+          isLocal: true,
+          author: { name: isAnonymous ? "Anonymous" : "You" },
           createdAt: new Date().toISOString(),
           likeCount: 0,
           isLiked: false,
           comments: [],
         };
+
+        // Save to local storage
+        const currentLocal = getOfflinePosts();
+        saveOfflinePosts([tempPost, ...currentLocal]);
+
+        return standardizePost(tempPost, user);
       }
-      const formData = new FormData();
-      formData.append('content', content);
-      if (imageFile) {
-        formData.append('image', imageFile);
-      }
-      const response = await api.post('/posts', formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
-      });
-      return response.data;
-    } catch (error) {
-      return rejectWithValue(error.response?.data?.message || 'Failed to create post');
+
+      return rejectWithValue(err.response?.data?.message || "Failed to create post");
     }
   }
 );
- 
-//like post async thunk
-export const toggleLike = createAsyncThunk(
-  'posts/toggleLike',
-  async ({ postId, isLiked }, { rejectWithValue }) => {
+
+export const toggleLikePost = createAsyncThunk(
+  "posts/toggleLike",
+  async ({ postId, currentlyLiked }, { rejectWithValue }) => {
     try {
-      const method = isLiked ? 'delete' : 'post';
-      const response = await api[method](`/posts/${postId}/like`);
-      return { postId, ...response.data };
-    } catch (error) {
-      return rejectWithValue(error.response?.data?.message || 'Failed to update like');
+      // If liked, we unlike (delete), else we like (post)
+      const path = `/posts/${postId}/like`;
+      const response = currentlyLiked 
+        ? await api.delete(path) 
+        : await api.post(path);
+        
+      return { postId, data: response.data };
+    } catch (err) {
+      return rejectWithValue("Failed to update like");
     }
   }
 );
 
-//adds comment async thunk
-export const addComment = createAsyncThunk(
-    'posts/addComment',
-    async ({ postId, content }, { rejectWithValue }) => {
-        try {
-            const response = await api.post(`/posts/${postId}/comments`, { content });
-            return { postId, comment: response.data };
-        } catch (error) {
-            return rejectWithValue(error.response?.data?.message || 'Failed to add comment');
-        }
+export const submitComment = createAsyncThunk(
+  "posts/addComment",
+  async ({ postId, text }, { rejectWithValue }) => {
+    try {
+      const response = await api.post(`/posts/${postId}/comments`, { content: text });
+      return { postId, comment: response.data };
+    } catch (err) {
+      return rejectWithValue("Comment failed");
     }
+  }
 );
 
-//delete post async thunk
-export const deletePost = createAsyncThunk(
-    'posts/deletePost',
-    async (postId, { rejectWithValue }) => {
-        try {
-            await api.delete(`/posts/${postId}`);
-            return postId;
-        } catch (error) {
-            return rejectWithValue(error.response?.data?.message || 'Failed to delete post');
-        }
+export const deleteComment = createAsyncThunk(
+  "posts/deleteComment",
+  async ({ postId, commentId }, { rejectWithValue }) => {
+    try {
+      await api.delete(`/posts/${postId}/comments/${commentId}`);
+      return { postId, commentId };
+    } catch (err) {
+      return rejectWithValue("Failed to delete comment");
     }
+  }
 );
 
-//posts slice
+export const removePost = createAsyncThunk(
+  "posts/deletePost",
+  async (postId, { rejectWithValue, getState }) => {
+    try {
+      // Check if it's a local-only post
+      const post = getState().posts.items.find((p) => p.id === postId);
+      const isLocal = post?.isLocal || String(postId).startsWith("local-");
+
+      if (!isLocal) {
+        await api.delete(`/posts/${postId}`);
+      }
+      
+      return postId;
+    } catch (err) {
+      if (err.response?.status === 404) return postId; // Already gone
+      return rejectWithValue("Delete failed");
+    }
+  }
+);
+
+// Slice Definition
+
 const postsSlice = createSlice({
-  name: 'posts',
+  name: "posts",
   initialState,
   reducers: {
-    // Reset to initial state
-    resetPosts: () => initialState,
+    clearPostsState: () => initialState,
     
-    // Clear any errors
     clearError: (state) => {
-      state.error = null;
+      state.errorMsg = null;
     },
     
-    // Update a post locally 
-    updatePostLocally: (state, action) => {
-      const { postId, updates } = action.payload;
-      const post = state.posts.find(p => p.id === postId);
-      if (post) {
-        Object.assign(post, updates);
-      }
-    },
+    // Optimistic update for likes (optional, but good UX)
+    setLikeStatus: (state, action) => {
+        const { postId, isLiked } = action.payload;
+        const post = state.items.find(p => p.id === postId);
+        if(post) {
+            post.isLiked = isLiked;
+            post.likeCount = isLiked ? post.likeCount + 1 : post.likeCount - 1;
+        }
+    }
   },
   extraReducers: (builder) => {
     builder
+      // Fetch Posts
       .addCase(fetchPosts.pending, (state) => {
-        state.loading = true;
-        state.error = null;
+        state.isLoading = true;
+        state.errorMsg = null;
       })
       .addCase(fetchPosts.fulfilled, (state, action) => {
-        state.loading = false;
+        state.isLoading = false;
         const { posts, page, totalPages } = action.payload;
 
-        //if first page, replace posts, otherwise append
-        state.posts = page === 1 ? posts : [...state.posts, ...posts];
-        state.currentPage = page;
-        state.totalPages = totalPages;
-        state.hasMore = page < totalPages;
+        // Replace if page 1, otherwise append
+        state.items = page === 1 ? posts : [...state.items, ...posts];
+        state.page = page;
+        state.maxPages = totalPages;
+        state.hasMoreItems = page < totalPages;
       })
       .addCase(fetchPosts.rejected, (state, action) => {
-        state.loading = false;
-        state.error = action.payload || 'Failed to fetch posts';
+        state.isLoading = false;
+        state.errorMsg = action.payload;
       })
-      .addCase(createPost.pending, (state) => {
-        state.loading = true;
-      })
+
+      // Create Post
       .addCase(createPost.fulfilled, (state, action) => {
-        state.loading = false;
-        // Add new post to the beginning
-        state.posts.unshift(action.payload);
+        state.items.unshift(action.payload);
       })
-      .addCase(createPost.rejected, (state, action) => {
-        state.loading = false;
-        state.error = action.payload;
-      })
-      .addCase(toggleLike.fulfilled, (state, action) => {
-        const { postId, liked, likeCount } = action.payload;
-        const post = state.posts.find(p => p.id === postId);
+      
+      // Toggle Like
+      .addCase(toggleLikePost.fulfilled, (state, action) => {
+        const { postId, data } = action.payload;
+        const post = state.items.find((p) => p.id === postId);
         if (post) {
-          post.liked = liked;
-          post.likeCount = likeCount;
+            // Use server response if available, otherwise toggle logically
+            post.isLiked = data.liked ?? data.isLiked ?? !post.isLiked;
+            post.likeCount = data.likeCount ?? data.likes_count ?? post.likeCount;
         }
       })
-      .addCase(toggleLike.rejected, (state, action) => {
-        state.error = action.payload;
-      })
-      .addCase(addComment.fulfilled, (state, action) => {
+
+      // Add Comment
+      .addCase(submitComment.fulfilled, (state, action) => {
         const { postId, comment } = action.payload;
-        const post = state.posts.find(p => p.id === postId);
+        const post = state.items.find((p) => p.id === postId);
         if (post) {
-          post.comments = post.comments || [];
+          if (!post.comments) post.comments = [];
           post.comments.push(comment);
+          post.commentCount += 1;
         }
       })
-      .addCase(addComment.rejected, (state, action) => {
-        state.error = action.payload;
+
+      // Delete Comment
+      .addCase(deleteComment.fulfilled, (state, action) => {
+        const { postId, commentId } = action.payload;
+        const post = state.items.find((p) => p.id === postId);
+        if (post && post.comments) {
+          post.comments = post.comments.filter((c) => c.id !== commentId);
+          post.commentCount = Math.max(0, post.commentCount - 1);
+        }
       })
-      .addCase(deletePost.fulfilled, (state, action) => {
-        const postId = action.payload;
-        state.posts = state.posts.filter(p => p.id !== postId);
-      })
-      .addCase(deletePost.rejected, (state, action) => {
-        state.error = action.payload;
+
+      // Delete Post
+      .addCase(removePost.fulfilled, (state, action) => {
+        const deletedId = action.payload;
+        state.items = state.items.filter((p) => p.id !== deletedId);
+        
+        // Also remove from local storage if present
+        const currentLocal = getOfflinePosts();
+        const updatedLocal = currentLocal.filter(p => p.id !== deletedId);
+        saveOfflinePosts(updatedLocal);
       });
   },
 });
 
-export const { resetPosts, clearError, updatePostLocally } = postsSlice.actions;
+// Export Actions
+export const { clearPostsState, clearError, setLikeStatus } = postsSlice.actions;
 
-//selector to get all posts
-export const selectAllPosts = (state) => state.posts.posts;
-export const selectPostById = (postId) => (state) => 
-  state.posts.posts.find(post => post.id === postId);
-export const selectPostsLoading = (state) => state.posts.loading;
-export const selectPostsError = (state) => state.posts.error;
-export const selectPagination = (state) => ({
-  currentPage: state.posts.currentPage,
-  totalPages: state.posts.totalPages,
-  hasMore: state.posts.hasMore,
+// Export Selectors
+export const selectAllPosts = (state) => state.posts.items;
+export const selectIsLoading = (state) => state.posts.isLoading;
+export const selectError = (state) => state.posts.errorMsg;
+export const selectPaginationInfo = (state) => ({
+  currentPage: state.posts.page,
+  totalPages: state.posts.maxPages,
+  hasMore: state.posts.hasMoreItems,
 });
 
 export default postsSlice.reducer;
-
-    

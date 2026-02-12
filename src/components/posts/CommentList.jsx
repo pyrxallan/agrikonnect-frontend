@@ -1,10 +1,20 @@
 import react from 'react';
 
-/**
- * CommentList component displays a list of comments for a post
-  * It shows the commenter's name, content, and creation date
- */
 const CommentList = ({ comments, isLoading, onDelete, currentUserId }) => {
+  const formatDate = (dateString) => {
+    if (!dateString) return '';
+    const date = new Date(dateString);
+    const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    const month = months[date.getMonth()];
+    const day = date.getDate();
+    const year = date.getFullYear();
+    let hour = date.getHours();
+    const minute = date.getMinutes().toString().padStart(2, '0');
+    const ampm = hour >= 12 ? 'PM' : 'AM';
+    hour = hour % 12;
+    hour = hour ? hour : 12;
+    return `${month} ${day}, ${year} at ${hour}:${minute} ${ampm}`;
+  };
   if (isLoading) {
     return <div>Loading comments...</div>;
   }
@@ -12,7 +22,7 @@ const CommentList = ({ comments, isLoading, onDelete, currentUserId }) => {
   if (!comments || comments.length === 0) {
     return <div className="text-sm text-gray-500">No comments yet.</div>;
   }
-// Render each comment with author initials, name, content, and created date. If onDelete is provided and the comment belongs to the current user, show a delete button
+
   return (
     <ul className="space-y-3">
       {comments.map((comment) => (
@@ -26,7 +36,7 @@ const CommentList = ({ comments, isLoading, onDelete, currentUserId }) => {
               {comment.content}
             </p>
             {comment.createdAt && (
-              <p className="text-xs text-gray-500">{comment.createdAt}</p>
+              <p className="text-xs text-gray-500">{formatDate(comment.createdAt)}</p>
             )}
           </div>
           {(onDelete && (comment.author?.id === currentUserId)) && (

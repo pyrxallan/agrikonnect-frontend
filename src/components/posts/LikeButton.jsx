@@ -1,45 +1,64 @@
 import React, { useState } from 'react';
 
-// Component for a like button that toggles between liked and unliked states, with a count of likes
-
-const LikeButton = ({ 
-  postId, 
-  isLiked: initialIsLiked = false, 
-  likeCount: initialLikeCount = 0, 
+const LikeButton = ({
+  postId,
+  isLiked = false,
+  likeCount = 0,
   onLikeToggle,
-  className = ''
+  className = '',
 }) => {
+  const [isBusy, setIsBusy] = useState(false);
 
-// State to track whether the post is currently liked and the count of likes
-  const [isLiked, setIsLiked] = useState(initialIsLiked);
-  const [likeCount, setLikeCount] = useState(initialLikeCount);
-  const [isProcessing, setIsProcessing] = useState(false);
+  const handleClick = async (e) => {
+    e.preventDefault();
+    e.stopPropagation();
 
-  //like and unlike handling
+    if (isBusy) return;
 
-  const handleToggleLike = async () => {
-    if (isProcessing) return; // remove spamming
-    setIsProcessing(true);
+    setIsBusy(true);
     try {
-      const nextLiked = !isLiked;
       if (onLikeToggle) {
-        await onLikeToggle(postId, nextLiked);
+        await onLikeToggle(postId, isLiked);
       }
-      setIsLiked(nextLiked);
-      setLikeCount((count) => Math.max(0, count + (nextLiked ? 1 : -1)));
+    } catch (error) {
+      console.error('Like action failed:', error);
     } finally {
-      setIsProcessing(false);
+      setIsBusy(false);
     }
   };
 
   return (
     <button
-      onClick={handleToggleLike}
-      disabled={isProcessing}
-      className={`flex items-center gap-1 text-sm font-medium ${isLiked ? 'text-green-600' : 'text-gray-500'} ${className}`}
+      onClick={handleClick}
+      disabled={isBusy}
+      aria-label={isLiked ? 'Unlike this post' : 'Like this post'}
+      className={`
+        flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium 
+        transition-colors duration-200 group
+        ${isLiked 
+          ? 'bg-red-50 text-red-500 hover:bg-red-100' 
+          : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+        }
+        ${isBusy ? 'opacity-50 cursor-not-allowed' : ''}
+        ${className}
+      `}
     >
-      {isLiked ? 'Liked' : 'Like'}
-      <span className="text-xs text-gray-400">{likeCount}</span>
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        className={`h-4 w-4 transition-transform duration-150 ${isBusy ? 'animate-pulse' : 'group-hover:scale-110'}`}
+        fill={isLiked ? 'currentColor' : 'none'}
+        viewBox="0 0 24 24"
+        stroke="currentColor"
+        strokeWidth={2}
+      >
+        <path
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"
+        />
+      </svg>
+
+      <span className="text-xs font-semibold">{likeCount}</span>
     </button>
   );
 };

@@ -3,7 +3,6 @@ import React, { useState } from 'react';
 const CommentForm = ({ onSubmit }) => {
   const [content, setContent] = useState('');
   
-  // Handle form submission, trim content, call onSubmit prop, and reset form
   const handleSubmit = (e) => {
 	e.preventDefault();
 	const trimmed = content.trim();
@@ -14,7 +13,6 @@ const CommentForm = ({ onSubmit }) => {
 	setContent('');
   };
 
-  // Simple form with an input and submit button
   return (
 	<form onSubmit={handleSubmit} className="mt-4 flex items-center gap-3">
 	  <input

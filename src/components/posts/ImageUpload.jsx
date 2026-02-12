@@ -1,8 +1,6 @@
 import React, { useRef, useState } from 'react';
 
-// Component for uploading an image file, with a preview and callback for selected file
-
-const ImageUpload = ({ 
+const ImageUpload = ({
   onImageSelect, 
   label = 'Add image',
   maxSizeMB = 5,
@@ -13,17 +11,14 @@ const ImageUpload = ({
   const [error, setError] = useState('');
   const fileInputRef = useRef(null);
 
-  // Handle file selection, validate size, create preview URL, and call onImageSelect callback
   const handleFileChange = (e) => {
     const file = e.target.files[0];
     setError('');
     
-    // If no file was selected, do nothing
     if (!file) {
       return;
     }
     
-    // CHeck if its an image and within size limits
     if (!file.type.startsWith('image/')) {
       setError('Please select an image file.');
       return;
@@ -33,7 +28,6 @@ const ImageUpload = ({
       return;
     }
     
-    //update state with file info and preview URL
     setFileName(file.name);
     const reader = new FileReader();
     reader.onloadend = () => {

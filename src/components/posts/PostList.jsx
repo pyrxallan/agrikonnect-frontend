@@ -1,8 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import PostCard from './PostCard';
 
-//List of posts with infinite scroll loading and error handling
-
 const PostList = ({
   posts = [],
   isLoading = false,
@@ -10,53 +8,81 @@ const PostList = ({
   onLoadMore,
   onLikeToggle,
   onCommentSubmit,
+  onCommentDelete,
   onDeletePost,
   currentUserId,
-  emptyMessage = "No posts yet. Be the first to post something!",
-  className = ''
+  emptyMessage = "No posts yet.",
+  className = '',
 }) => {
-  const LoadMoreRef = useRef(null);
-  const [isFetchingMore, setIsFetchingMore] = useState(false);
-
-  //setup intersection observer for infinite scroll
+  const sentinelRef = useRef(null);
+  const [isFetchingPage, setIsFetchingPage] = useState(false);
 
   useEffect(() => {
-    if (!LoadMoreRef.current || isLoading || !onLoadMore) return;
+    if (isLoading || !hasMore || !sentinelRef.current) return;
 
     const observer = new IntersectionObserver(
       (entries) => {
-        if (entries[0].isIntersecting && hasMore && !isFetchingMore) {
-          setIsFetchingMore(true);
-          onLoadMore().finally(() => setIsFetchingMore(false));
+        const firstEntry = entries[0];
+        if (firstEntry.isIntersecting && !isFetchingPage) {
+          setIsFetchingPage(true);
+          Promise.resolve(onLoadMore())
+            .finally(() => setIsFetchingPage(false));
         }
       },
-      { threshold: 0.25 }
+      { threshold: 0.1 }
     );
 
-    observer.observe(LoadMoreRef.current);
+    observer.observe(sentinelRef.current);
     return () => observer.disconnect();
-  }, [onLoadMore, hasMore, isLoading, isFetchingMore]);
+  }, [hasMore, isLoading, isFetchingPage, onLoadMore]);
+
+  const showInitialLoader = isLoading && posts.length === 0;
+  const showEmptyState = !isLoading && posts.length === 0;
 
   return (
-    <div className={`space-y-4 ${className}`}>
-      {posts.length === 0 && !isLoading ? (
-        <p className="text-center text-gray-500">{emptyMessage}</p>
-      ) : (
-        posts.map((post) => (
+    <div className={`flex flex-col gap-4 ${className}`}>
+      {/* Render Posts */}
+      {posts.map((post, index) => {
+        const postKey = post.id || post.clientId || `post-${index}`;
+        
+        return (
           <PostCard
-            key={post.id}
+            key={postKey}
             post={post}
             currentUserId={currentUserId}
             onLikeToggle={onLikeToggle}
-            onCommentSubmit={(postId, content) => onCommentSubmit(postId, content)}
+            onCommentSubmit={onCommentSubmit}
+            onCommentDelete={onCommentDelete}
             onDeletePost={onDeletePost}
             isOwnPost={post.author?.id === currentUserId}
           />
-        ))
+        );
+      })}
+
+      {/* Empty State */}
+      {showEmptyState && (
+        <div className="text-center py-10 bg-gray-50 rounded-xl border border-dashed border-gray-200">
+          <p className="text-gray-500">{emptyMessage}</p>
+        </div>
       )}
-      <div ref={LoadMoreRef} className="h-10 flex items-center justify-center">
-        {isLoading && <span className="text-sm text-gray-500">Loading...</span>}
-        {!isLoading && hasMore && <span className="text-sm text-gray-500">Load more...</span>}
+
+      {/* Initial Loading State */}
+      {showInitialLoader && (
+        <div className="flex justify-center py-8">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-green-600"></div>
+        </div>
+      )}
+
+      <div ref={sentinelRef} className="py-4 flex justify-center min-h-[40px]">
+        {!isLoading && hasMore && (
+          <span className="text-sm text-gray-400">Scroll for more</span>
+        )}
+        {isLoading && posts.length > 0 && (
+           <div className="flex items-center gap-2 text-gray-500">
+             <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-gray-400"></div>
+             <span className="text-xs">Loading...</span>
+           </div>
+        )}
       </div>
     </div>
   );
