@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom';
 
-// Expert card component displaying profile information
-const ExpertCard = ({ expert }) => {
+// Expert card component displaying profile information with follow action
+const ExpertCard = ({ expert, onFollow, currentUserId }) => {
   // Extract initials from full name for avatar fallback
   const getInitials = (name) => name.split(' ').map(n => n[0]).join('');
   
@@ -85,10 +85,19 @@ const ExpertCard = ({ expert }) => {
         {/* view profile styled as Link for navigation that takes users to the experts detailed page */}
         <Link 
           to={`/experts/${expert.id}`} 
-          className="flex-1 px-3 py-2.5 text-center glass text-gray-700 rounded-full hover:bg-gray-50 font-semibold transition-all"
+          className={`${currentUserId === expert.id ? 'flex-1' : 'flex-1'} px-3 py-2.5 text-center glass text-gray-700 rounded-full hover:bg-gray-50 font-semibold transition-all`}
         >
           View Profile
         </Link>
+         {/* follow button that when triggerd it calls onfollow function with experts id - hidden if viewing own profile */}
+        {currentUserId !== expert.id && (
+          <button 
+            onClick={() => onFollow(expert.id)} 
+            className="px-4 py-2.5 rounded-full font-semibold bg-secondary text-white hover:bg-secondary/90 transition-all shadow-md hover:shadow-lg"
+          >
+            {expert.is_following ? 'Following' : 'Follow'}
+          </button>
+        )}
       </div>
     </div>
   );

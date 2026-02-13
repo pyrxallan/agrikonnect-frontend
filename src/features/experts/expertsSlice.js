@@ -15,7 +15,11 @@ const expertsSlice = createSlice({
     builder
       // Fetch all experts
       .addCase(fetchExperts.pending, (state) => { state.loading = true; })
-      .addCase(fetchExperts.fulfilled, (state, action) => { state.loading = false; state.list = action.payload; })
+      .addCase(fetchExperts.fulfilled, (state, action) => { 
+        state.loading = false; 
+        // Handle paginated response
+        state.list = action.payload.experts || action.payload; 
+      })
       .addCase(fetchExperts.rejected, (state, action) => { state.loading = false; state.error = action.error.message; })
       // Fetch single expert
       .addCase(fetchExpert.pending, (state) => { state.loading = true; })

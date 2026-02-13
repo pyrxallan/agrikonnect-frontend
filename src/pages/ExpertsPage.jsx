@@ -7,6 +7,7 @@ import ExpertCard from '../components/ExpertCard';
   const ExpertsPage = () => {
   const dispatch = useAppDispatch();
   const { list: experts, loading } = useAppSelector(state => state.experts); 
+  const { user } = useAppSelector(state => state.auth);
   const [search, setSearch] = useState('');
   const [location, setLocation] = useState('');
   const [specialty, setSpecialty] = useState('');
@@ -30,6 +31,11 @@ import ExpertCard from '../components/ExpertCard';
 
   // extract unique locations for filter dropdown
   const locations = [...new Set(experts.map(e => e.location).filter(Boolean))];
+
+  const handleFollow = (expertId) => {
+    console.log('Follow expert:', expertId);
+    // TODO: Implement follow functionality
+  };
 
   if (loading) {
     return (
@@ -97,7 +103,7 @@ import ExpertCard from '../components/ExpertCard';
         
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
           {filteredExperts.map((expert) => (
-            <ExpertCard key={expert.id} expert={expert} />
+            <ExpertCard key={expert.id} expert={expert} onFollow={handleFollow} currentUserId={user?.id} />
           ))}
         </div>
       </div>

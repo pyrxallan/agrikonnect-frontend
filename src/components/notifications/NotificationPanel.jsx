@@ -7,6 +7,8 @@ const NotificationPanel = ({ onClose }) => {
 
   useEffect(() => {
     fetchNotifications();
+    const interval = setInterval(fetchNotifications, 5000); // Poll every 5 seconds
+    return () => clearInterval(interval);
   }, []);
 
   const fetchNotifications = async () => {

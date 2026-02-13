@@ -10,7 +10,13 @@ export default function Inbox({ onSelect, activeUserId, onNewChat }) {
     const loadInbox = async () => {
       try {
         const data = await fetchInbox();
-        setConversations(data || []);
+        // merge with existing conversations to persist ordering
+        setConversations((prev) => {
+          const map = new Map();
+          (prev || []).forEach(p => map.set(p.user_id, p));
+          (data || []).forEach(d => map.set(d.user_id, d));
+          return Array.from(map.values()).sort((a,b) => new Date(b.last_message_time) - new Date(a.last_message_time));
+        });
         setError(null);
       } catch (err) {
         console.error('Inbox error:', err);
@@ -62,6 +68,10 @@ export default function Inbox({ onSelect, activeUserId, onNewChat }) {
 
       {!loading && conversations.length > 0 && conversations.map((conv) => {
         const initials = conv.first_name?.charAt(0).toUpperCase() + (conv.last_name?.charAt(0).toUpperCase() || '');
+        const baseUrl = import.meta.env.VITE_API_URL.replace('/api/v1', '');
+        const profileImage = conv.profile_image && !conv.profile_image.startsWith('http') 
+          ? `${baseUrl}${conv.profile_image}` 
+          : conv.profile_image;
         
         return (
           <div
@@ -76,9 +86,9 @@ export default function Inbox({ onSelect, activeUserId, onNewChat }) {
             <div className="flex items-center gap-3">
               {/* Avatar */}
               <div className="relative flex-shrink-0">
-                {conv.profile_image ? (
+                {profileImage ? (
                   <img
-                    src={conv.profile_image}
+                    src={profileImage}
                     alt={conv.username}
                     className="w-12 h-12 rounded-full object-cover"
                   />

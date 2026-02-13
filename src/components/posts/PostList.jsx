@@ -54,7 +54,7 @@ const PostList = ({
             onCommentSubmit={onCommentSubmit}
             onCommentDelete={onCommentDelete}
             onDeletePost={onDeletePost}
-            isOwnPost={post.author?.id === currentUserId}
+            isOwnPost={String(post.author?.id) === String(currentUserId)}
           />
         );
       })}

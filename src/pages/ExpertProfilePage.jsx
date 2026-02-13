@@ -9,6 +9,7 @@ const ExpertProfilePage = () => {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const { current: expert, loading } = useAppSelector(state => state.experts);
+  const { user } = useAppSelector(state => state.auth);
 
   // fetch expert data on mount or when id changes
   useEffect(() => {
@@ -85,21 +86,23 @@ const ExpertProfilePage = () => {
                 </div>
               )}
               
-              {/* follow and message buttons */}
-              <div className="flex gap-3">
-                <button 
-                  onClick={handleFollow} 
-                  className="px-6 py-3 bg-secondary text-white rounded-full font-semibold hover:bg-secondary/90 transition-all shadow-lg"
-                >
-                  {expert.is_following ? 'Following' : 'Follow'}
-                </button>
-                <button 
-                  onClick={() => navigate(`/messages/${id}`)} 
-                  className="px-6 py-3 glass bg-white text-gray-700 rounded-full font-semibold hover:bg-gray-200 transition-all flex items-center gap-2"
-                >
-                  Message
-                </button>
-              </div>
+              {/* follow and message buttons - hidden if viewing own profile */}
+              {user?.id !== parseInt(id) && (
+                <div className="flex gap-3">
+                  <button 
+                    onClick={handleFollow} 
+                    className="px-6 py-3 bg-secondary text-white rounded-full font-semibold hover:bg-secondary/90 transition-all shadow-lg"
+                  >
+                    {expert.is_following ? 'Following' : 'Follow'}
+                  </button>
+                  <button 
+                    onClick={() => navigate(`/messages/${id}`)} 
+                    className="px-6 py-3 glass bg-white text-gray-700 rounded-full font-semibold hover:bg-gray-200 transition-all flex items-center gap-2"
+                  >
+                    Message
+                  </button>
+                </div>
+              )}
             </div>
           </div>
           

@@ -10,6 +10,7 @@ const ProfilePage = () => {
   const currentUser = useSelector((state) => state.auth.user);
   const [profile, setProfile] = useState(null);
   const [posts, setPosts] = useState([]);
+  const [communitiesList, setCommunitiesList] = useState([]);
   const [stats, setStats] = useState({ posts: 0, communities: 0 });
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('posts');
@@ -20,12 +21,23 @@ const ProfilePage = () => {
   useEffect(() => {
     fetchProfile();
     fetchUserPosts();
+    fetchUserCommunities();
   }, [userId]);
 
   const fetchProfile = async () => {
     try {
       const id = userId || currentUser?.id;
       const { data } = await api.get(`/users/${id}`);
+      
+      // Convert relative image URLs to absolute
+      const baseUrl = import.meta.env.VITE_API_URL.replace('/api/v1', '');
+      if (data.profile_image && !data.profile_image.startsWith('http')) {
+        data.profile_image = `${baseUrl}${data.profile_image}`;
+      }
+      if (data.cover_image && !data.cover_image.startsWith('http')) {
+        data.cover_image = `${baseUrl}${data.cover_image}`;
+      }
+      
       setProfile(data);
       setStats({ posts: data.posts_count || 0, communities: data.communities_count || 0 });
     } catch (error) {
@@ -45,6 +57,17 @@ const ProfilePage = () => {
     }
   };
 
+  const fetchUserCommunities = async () => {
+    try {
+      const id = userId || currentUser?.id;
+      const { data } = await api.get(`/users/${id}/communities`);
+      setCommunitiesList(data || []);
+    } catch (error) {
+      console.error('Failed to fetch communities:', error);
+      setCommunitiesList([]);
+    }
+  };
+
   const handlePhotoUpload = async (file, type) => {
     const formData = new FormData();
     formData.append('file', file);
@@ -54,10 +77,21 @@ const ProfilePage = () => {
       const { data } = await api.post(`/users/${profile.id}/upload-photo`, formData, {
         headers: { 'Content-Type': 'multipart/form-data' }
       });
-      setProfile({ ...profile, [type === 'profile' ? 'profile_image' : 'cover_image']: data.url });
+      
+      // Construct full URL from backend response
+      const baseUrl = import.meta.env.VITE_API_URL.replace('/api/v1', '');
+      const fullUrl = data.url.startsWith('http') ? data.url : `${baseUrl}${data.url}`;
+      
+      // Update profile state immediately
+      const updatedProfile = {
+        ...profile,
+        [type === 'profile' ? 'profile_image' : 'cover_image']: fullUrl
+      };
+      setProfile(updatedProfile);
+      
     } catch (error) {
       console.error('Failed to upload photo:', error);
-      alert('Failed to upload photo');
+      alert(error.response?.data?.error || 'Failed to upload photo');
     }
   };
 
@@ -78,13 +112,19 @@ const ProfilePage = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white pb-20 md:pb-8">
+    <div className="min-h-screen relative">
+      {/* Light Gradient background to match site theme */}
+      <div className="fixed inset-0 bg-gradient-to-br from-slate-100 via-blue-50 to-slate-100 -z-20" />
+      <div className="fixed inset-0 opacity-30 -z-20" style={{
+        backgroundImage: 'radial-gradient(circle at 30% 50%, rgba(34, 197, 94, 0.08) 0%, transparent 50%), radial-gradient(circle at 70% 80%, rgba(59, 130, 246, 0.08) 0%, transparent 50%)'
+      }} />
+      <div className="relative z-10 pb-20 md:pb-8">
       {/* Cover Photo */}
-      <div className="relative h-48 md:h-64 lg:h-80 bg-gradient-to-r from-primary to-secondary overflow-hidden">
+      <div className="relative h-48 md:h-64 lg:h-80 overflow-hidden">
         {profile.cover_image ? (
           <img src={profile.cover_image} alt="Cover" className="w-full h-full object-cover" />
         ) : (
-          <div className="w-full h-full bg-gradient-to-r from-primary via-secondary to-primary" />
+          <div className="w-full h-full bg-cover bg-center" style={{ backgroundImage: "url('/farm-2.avif')" }} />
         )}
         {isOwnProfile && (
           <label className="absolute bottom-2 right-2 md:bottom-4 md:right-4 bg-white/90 backdrop-blur-sm text-gray-800 px-3 py-1.5 md:px-4 md:py-2 rounded-full cursor-pointer hover:bg-white transition-all shadow-lg flex items-center gap-2">
@@ -231,14 +271,14 @@ const ProfilePage = () => {
         <div className="mt-4 md:mt-6">
           {activeTab === 'posts' && (
             <div className="space-y-3 md:space-y-4">
-              {posts.length === 0 ? (
+                {posts.length === 0 ? (
                 <div className="text-center py-12 md:py-16 text-gray-500">
                   <p className="text-base md:text-lg">No posts yet</p>
                 </div>
               ) : (
                 posts.map((post) => (
-                  <div key={post.id} className="glass bg-white rounded-xl md:rounded-2xl shadow-sm p-4 md:p-6 hover:shadow-md transition-all border border-gray-100">
-                    <h3 className="font-bold text-gray-900 mb-2 text-base md:text-lg">{post.title}</h3>
+                  <div key={post.id} className="glass rounded-xl md:rounded-2xl shadow-sm p-4 md:p-6 hover:shadow-md transition-all border border-gray-100">
+                    <h3 className="font-bold text-white mb-2 text-base md:text-lg">{post.title}</h3>
                     <p className="text-gray-600 text-sm line-clamp-2 leading-relaxed">{post.content}</p>
                     <div className="flex items-center gap-3 md:gap-4 mt-3 md:mt-4 text-xs md:text-sm text-gray-500">
                       <span>{new Date(post.created_at).toLocaleDateString()}</span>
@@ -252,8 +292,36 @@ const ProfilePage = () => {
           )}
 
           {activeTab === 'communities' && (
-            <div className="text-center py-12 md:py-16 text-gray-500">
-              <p className="text-base md:text-lg">Communities feature coming soon</p>
+            <div className="space-y-4">
+              {communitiesList.length === 0 ? (
+                <div className="text-center py-12 md:py-16 text-gray-500">
+                  <p className="text-base md:text-lg">Not a member of any communities yet</p>
+                </div>
+              ) : (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {communitiesList.map((c) => (
+                    <div key={c.id} className="glass bg-white rounded-xl p-4 border border-gray-100 shadow-sm">
+                      <div className="flex items-center gap-3">
+                        <div className="w-12 h-12 rounded-md overflow-hidden bg-gray-100 flex items-center justify-center">
+                          {c.image_url ? <img src={c.image_url} alt={c.name} className="w-full h-full object-cover" /> : <span className="text-sm font-semibold text-gray-600">{c.name[0]}</span>}
+                        </div>
+                        <div className="flex-1">
+                          <h4 className="font-semibold text-gray-900">{c.name}</h4>
+                          <p className="text-sm text-gray-600 line-clamp-2">{c.description}</p>
+                          <div className="text-xs text-gray-500 mt-2">{c.members_count || 0} members</div>
+                        </div>
+                        <div>
+                          {c.is_member ? (
+                            <span className="text-xs text-green-600 font-semibold">Member</span>
+                          ) : (
+                            <span className="text-xs text-gray-500">Public</span>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
           )}
         </div>
@@ -270,6 +338,7 @@ const ProfilePage = () => {
           }}
         />
       )}
+      </div>
     </div>
   );
 };

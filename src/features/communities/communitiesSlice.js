@@ -15,7 +15,11 @@ const communitiesSlice = createSlice({
     builder
       // Fetch all communities
       .addCase(fetchCommunities.pending, (state) => { state.loading = true; })
-      .addCase(fetchCommunities.fulfilled, (state, action) => { state.loading = false; state.list = action.payload; })
+      .addCase(fetchCommunities.fulfilled, (state, action) => { 
+        state.loading = false; 
+        // Handle paginated response
+        state.list = action.payload.communities || action.payload; 
+      })
       .addCase(fetchCommunities.rejected, (state, action) => { state.loading = false; state.error = action.error.message; })
       // Fetch single community
       .addCase(fetchCommunity.fulfilled, (state, action) => { state.current = action.payload; })

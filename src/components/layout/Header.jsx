@@ -60,8 +60,16 @@ const Header = () => {
               <>
                 <NotificationBadge userId={user.id} />
                 <Link to="/profile" className="flex items-center gap-3 bg-white/10 backdrop-blur-sm rounded-full px-4 py-2 hover:bg-white/20 transition-colors cursor-pointer">
-                  <div className="w-10 h-10 rounded-full bg-gradient-to-br from-primary to-secondary flex items-center justify-center text-white font-bold">
-                    {user.first_name[0]}{user.last_name[0]}
+                  <div className="w-10 h-10 rounded-full bg-gradient-to-br from-primary to-secondary flex items-center justify-center text-white font-bold overflow-hidden">
+                    {user.profile_image ? (
+                      <img 
+                        src={user.profile_image.startsWith('http') ? user.profile_image : `${import.meta.env.VITE_API_URL.replace('/api/v1', '')}${user.profile_image}`}
+                        alt={user.first_name} 
+                        className="w-full h-full object-cover" 
+                      />
+                    ) : (
+                      `${user.first_name[0]}${user.last_name[0]}`
+                    )}
                   </div>
                   <div className="text-left">
                     <div className="text-white font-semibold text-sm">{user.first_name} {user.last_name}</div>
