@@ -25,8 +25,8 @@ const CommentList = ({ comments, isLoading, onDelete, currentUserId }) => {
 
   return (
     <ul className="space-y-3">
-      {comments.map((comment) => (
-        <li key={comment.id} className="flex items-start gap-3">
+      {comments.map((comment, index) => (
+        <li key={comment.id || `comment-${index}`} className="flex items-start gap-3">
           <div className="h-6 w-6 rounded-full bg-gray-300 text-gray-600 flex items-center justify-center text-xs font-semibold">
             {comment.author?.name?.charAt(0).toUpperCase() || 'A'}
           </div>
@@ -35,8 +35,8 @@ const CommentList = ({ comments, isLoading, onDelete, currentUserId }) => {
               <span className="font-semibold">{comment.author?.name || 'Anonymous'}</span>{' '}
               {comment.content}
             </p>
-            {comment.createdAt && (
-              <p className="text-xs text-gray-500">{formatDate(comment.createdAt)}</p>
+            {(comment.createdAt || comment.created_at) && (
+              <p className="text-xs text-gray-500">{formatDate(comment.createdAt || comment.created_at)}</p>
             )}
           </div>
           {(onDelete && (comment.author?.id === currentUserId)) && (

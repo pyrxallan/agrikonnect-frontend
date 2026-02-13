@@ -42,8 +42,14 @@ const PostComposer = ({
     setIsPosting(true);
     try {
       if (onSubmit) {
+        // Auto-generate title from content (first 50 chars or first line)
+        const contentText = text.trim();
+        const firstLine = contentText.split('\n')[0];
+        const title = (firstLine.length > 50 ? firstLine.substring(0, 50) + '...' : firstLine) || 'Untitled Post';
+        
         await onSubmit({
-          content: text.trim(),
+          title,
+          content: contentText,
           imageFile: selectedImage,
           isAnonymous: anonymous
         });

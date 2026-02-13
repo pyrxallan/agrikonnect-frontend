@@ -28,20 +28,49 @@ const FeedPage = () => {
   const userName = currentUser?.first_name || currentUser?.name || 'User';
 
   const [searchInput, setSearchInput] = useState('');
+  const [offlineMode, setOfflineMode] = useState(false);
+  const [failedAttempts, setFailedAttempts] = useState(0);
 
   useEffect(() => {
-    dispatch(fetchPosts(1));
+    dispatch(fetchPosts(1))
+      .unwrap()
+      .then(() => {
+        setOfflineMode(false);
+        setFailedAttempts(0);
+      })
+      .catch(() => {
+        setOfflineMode(true);
+        setFailedAttempts(prev => prev + 1);
+      });
   }, [dispatch]);
 
   useEffect(() => {
+    // Adjust refresh interval based on offline status
+    const refreshInterval = offlineMode ? 60000 : 20000; // 1 min offline, 20s online
+    
+    // Stop auto-refresh after multiple failed attempts
+    if (failedAttempts > 5) {
+      console.log('Multiple failed attempts detected. Auto-refresh paused.');
+      return;
+    }
+    
     const intervalId = setInterval(() => {
       if (!document.hidden) {
-        dispatch(fetchPosts(1));
+        dispatch(fetchPosts(1))
+          .unwrap()
+          .then(() => {
+            setOfflineMode(false);
+            setFailedAttempts(0);
+          })
+          .catch(() => {
+            setOfflineMode(true);
+            setFailedAttempts(prev => prev + 1);
+          });
       }
-    }, 20000);
+    }, refreshInterval);
 
     return () => clearInterval(intervalId);
-  }, [dispatch]);
+  }, [dispatch, offlineMode, failedAttempts]);
 
   const handleLoadMore = useCallback(() => {
     if (!isLoading && hasMoreItems) {
@@ -50,11 +79,12 @@ const FeedPage = () => {
   }, [dispatch, isLoading, hasMoreItems, currentPage]);
 
   const handlePostSubmit = useCallback(async (postData) => {
-    const { content, imageFile, isAnonymous } = postData;
+    const { title, content, imageFile, isAnonymous } = postData;
     try {
-      await dispatch(createPost({ content, imageFile, isAnonymous })).unwrap();
+      await dispatch(createPost({ title, content, imageFile, isAnonymous })).unwrap();
     } catch (err) {
       console.error('Post creation failed inside component:', err);
+      throw err; // Re-throw so PostComposer can display the error
     }
   }, [dispatch]);
 

@@ -11,12 +11,20 @@ const NotificationBadge = ({ userId }) => {
   useEffect(() => {
     if (!userId) return;
 
+    let retryCount = 0;
+    const maxRetries = 3;
+
     const fetchUnreadCount = async () => {
       try {
         const count = await notificationService.getUnreadCount();
         setUnreadCount(count);
+        retryCount = 0; // Reset on success
       } catch (error) {
-        console.error('Failed to fetch unread count:', error);
+        retryCount++;
+        // Only log first few errors to avoid console spam
+        if (retryCount <= maxRetries) {
+          console.error('Failed to fetch unread count:', error);
+        }
       }
     };
 
