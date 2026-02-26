@@ -18,9 +18,9 @@ const PostCard = ({
     id,
     title,
     content,
-    image_url,
-    author_id,
-    created_at,
+    imageUrl,
+    author,
+    createdAt,
     likeCount = 0,
     commentCount = 0,
     isLiked = false,
@@ -28,47 +28,75 @@ const PostCard = ({
     isAnonymous,
   } = post;
 
-  // Get author name from post data
-  const authorName = post.author?.first_name && post.author?.last_name 
-    ? `${post.author.first_name} ${post.author.last_name}`
-    : post.author?.name || 'Anonymous';
+  const getAuthorName = () => {
+    if (isAnonymous) return 'Anonymous';
+    return author?.name || 'Unknown User';
+  };
 
-  //get author initials for avatar
-  const authorInitials = authorName
-    .split(' ').map(n => n[0]).join('').toUpperCase();
-  
-  // Get author profile image
-  const authorImage = post.author?.profile_image;
-  const baseUrl = import.meta.env.VITE_API_URL.replace('/api/v1', '');
-  const fullImageUrl = authorImage && !authorImage.startsWith('http') ? `${baseUrl}${authorImage}` : authorImage;
+  const getInitials = () => {
+    const name = getAuthorName();
+    if (!name) return '??';
+    return name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
+  };
 
-  // Format creation date
-  const formattedDate = created_at ? new Date(created_at).toLocaleString() : '';
+  const formatDate = () => {
+    if (!createdAt) return '';
+    const date = new Date(createdAt);
+    const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    const month = months[date.getMonth()];
+    const day = date.getDate();
+    const year = date.getFullYear();
+    let hour = date.getHours();
+    const minute = date.getMinutes().toString().padStart(2, '0');
+    const ampm = hour >= 12 ? 'PM' : 'AM';
+    hour = hour % 12;
+    hour = hour ? hour : 12;
+    return `${month} ${day}, ${year} at ${hour}:${minute} ${ampm}`;
+  };
+
+  const handleDeleteClick = () => {
+    if (onDeletePost && id) {
+      if (window.confirm('Are you sure you want to delete this post?')) {
+        onDeletePost(id);
+      }
+    }
+  };
+
+  const authorId = author?.id;
+  const isProfileLinkable = !!authorId && !isAnonymous;
 
   return (
-    <div className={`glass rounded-2xl shadow-lg hover:shadow-xl transition-all p-6 mb-4 ${className}`}>
-      <div className="flex items-center justify-between mb-4">
-        <div className="flex items-center">
-          <div className="h-12 w-12 rounded-full bg-gradient-to-br from-primary to-secondary text-white flex items-center justify-center text-lg font-bold mr-3 overflow-hidden">
-            {fullImageUrl ? (
-              <img src={fullImageUrl} alt={authorName} className="w-full h-full object-cover" />
-            ) : (
-              authorInitials
-            )}
+    <div className={`bg-white border border-gray-200 rounded-xl shadow-sm overflow-hidden ${className}`}>
+      {/* Header Section */}
+      <div className="p-4 flex items-center justify-between border-b border-gray-100">
+        <div className="flex items-center gap-3">
+          {/* Avatar */}
+          <div className="w-10 h-10 rounded-full bg-emerald-100 text-emerald-700 flex items-center justify-center font-bold text-sm flex-shrink-0">
+            {getInitials()}
           </div>
-          <div>
-            <p className="font-semibold text-gray-900">{authorName}</p>
-            <p className="text-xs text-gray-500">{formattedDate}</p>
+          
+          {/* Author Info */}
+          <div className="flex flex-col">
+            {isProfileLinkable ? (
+              <Link 
+                to={`/profile/${authorId}`} 
+                className="font-semibold text-gray-900 hover:text-emerald-600 transition-colors text-sm"
+              >
+                {getAuthorName()}
+              </Link>
+            ) : (
+              <span className="font-semibold text-gray-900 text-sm">{getAuthorName()}</span>
+            )}
+            <span className="text-xs text-gray-400">{formatDate()}</span>
           </div>
         </div>
-        {isOwnPost && onDeletePost && (
+
+        {/* Actions (Delete) */}
+        {isOwnPost && (
           <button
-            onClick={() => {
-              if (window.confirm('Are you sure you want to delete this post?')) {
-                onDeletePost(id);
-              }
-            }}
-            className="text-white bg-red-500 hover:bg-red-600 text-sm font-semibold px-4 py-2 rounded-full transition-all shadow-md hover:shadow-lg"
+            onClick={handleDeleteClick}
+            className="text-gray-400 hover:text-red-500 transition-colors p-1 rounded-full hover:bg-red-50"
+            aria-label="Delete post"
           >
             <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
@@ -77,26 +105,38 @@ const PostCard = ({
         )}
       </div>
 
-      {title && title.trim() !== '' && !content.startsWith(title) && (
-        <h2 className="text-xl md:text-2xl font-bold text-gray-900 mb-3">{title}</h2>
-      )}
-      <p className="text-gray-700 mb-3 leading-relaxed">{content}</p>
-      {image_url && (
-        <img
-          src={image_url}
-          alt="Post visual content"
-          className="w-full h-auto rounded-xl mb-4 object-cover"
-        />
+      {/* Content Section */}
+      <div className="p-4 space-y-2">
+        {title && <h3 className="text-lg font-bold text-gray-800">{title}</h3>}
+        {content && <p className="text-gray-700 text-sm whitespace-pre-wrap">{content}</p>}
+      </div>
+
+      {/* Image Section */}
+      {imageUrl && (
+        <div className="w-full bg-gray-50 border-t border-b border-gray-100">
+          <img 
+            src={imageUrl} 
+            alt="Post content" 
+            className="w-full max-h-[400px] object-contain mx-auto"
+          />
+        </div>
       )}
 
-      <div className="flex items-center gap-6 py-3 border-t border-gray-100">
+      {/* Stats & Interaction Bar */}
+      <div className="px-4 py-2 border-t border-gray-100 flex items-center justify-between bg-gray-50/50">
         <LikeButton
           postId={id}
           isLiked={isLiked}
           likeCount={likeCount}
           onLikeToggle={onLikeToggle}
         />
-        <span className="text-sm text-gray-600 font-medium">{commentCount} Comments</span>
+        
+        <div className="flex items-center gap-1 text-gray-500">
+          <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+          </svg>
+          <span className="text-xs font-medium">{commentCount} Comments</span>
+        </div>
       </div>
 
       {/* Comment Section */}

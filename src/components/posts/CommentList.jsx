@@ -25,28 +25,18 @@ const CommentList = ({ comments, isLoading, onDelete, currentUserId }) => {
 
   return (
     <ul className="space-y-3">
-      {comments.map((comment, idx) => {
-        const authorName = comment.author?.first_name && comment.author?.last_name ? `${comment.author.first_name} ${comment.author.last_name}` : comment.author?.name || 'Anonymous';
-        const authorImage = comment.author?.profile_image;
-        const baseUrl = import.meta.env.VITE_API_URL.replace('/api/v1', '');
-        const fullImageUrl = authorImage && !authorImage.startsWith('http') ? `${baseUrl}${authorImage}` : authorImage;
-        
-        return (
-        <li key={comment.id ?? `c-${idx}`} className="flex items-start gap-3">
-          <div className="h-6 w-6 rounded-full bg-gray-300 text-gray-600 flex items-center justify-center text-xs font-semibold overflow-hidden">
-            {fullImageUrl ? (
-              <img src={fullImageUrl} alt={authorName} className="w-full h-full object-cover" />
-            ) : (
-              authorName?.charAt(0).toUpperCase() || 'A'
-            )}
+      {comments.map((comment, index) => (
+        <li key={comment.id || `comment-${index}`} className="flex items-start gap-3">
+          <div className="h-6 w-6 rounded-full bg-gray-300 text-gray-600 flex items-center justify-center text-xs font-semibold">
+            {comment.author?.name?.charAt(0).toUpperCase() || 'A'}
           </div>
           <div className="flex-1">
             <p className="text-sm text-gray-800">
-              <span className="font-semibold">{authorName}</span>{' '}
+              <span className="font-semibold">{comment.author?.name || 'Anonymous'}</span>{' '}
               {comment.content}
             </p>
-            {(comment.created_at || comment.createdAt) && (
-              <p className="text-xs text-gray-500">{comment.created_at || comment.createdAt}</p>
+            {(comment.createdAt || comment.created_at) && (
+              <p className="text-xs text-gray-500">{formatDate(comment.createdAt || comment.created_at)}</p>
             )}
           </div>
           {(onDelete && (comment.author?.id === currentUserId)) && (
@@ -58,8 +48,7 @@ const CommentList = ({ comments, isLoading, onDelete, currentUserId }) => {
             </button>
           )}
         </li>
-      );
-      })}
+      ))}
     </ul>
   );
 };

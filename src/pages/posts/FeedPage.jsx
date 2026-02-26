@@ -4,7 +4,7 @@ import {
   fetchPosts,
   createPost,
   toggleLikePost,
-  addComment,
+  submitComment,
   deleteComment,
   removePost,
   selectAllPosts,
@@ -28,20 +28,49 @@ const FeedPage = () => {
   const userName = currentUser?.first_name || currentUser?.name || 'User';
 
   const [searchInput, setSearchInput] = useState('');
+  const [offlineMode, setOfflineMode] = useState(false);
+  const [failedAttempts, setFailedAttempts] = useState(0);
 
   useEffect(() => {
-    dispatch(fetchPosts(1));
+    dispatch(fetchPosts(1))
+      .unwrap()
+      .then(() => {
+        setOfflineMode(false);
+        setFailedAttempts(0);
+      })
+      .catch(() => {
+        setOfflineMode(true);
+        setFailedAttempts(prev => prev + 1);
+      });
   }, [dispatch]);
 
   useEffect(() => {
+    // Adjust refresh interval based on offline status
+    const refreshInterval = offlineMode ? 60000 : 20000; // 1 min offline, 20s online
+    
+    // Stop auto-refresh after multiple failed attempts
+    if (failedAttempts > 5) {
+      console.log('Multiple failed attempts detected. Auto-refresh paused.');
+      return;
+    }
+    
     const intervalId = setInterval(() => {
       if (!document.hidden) {
-        dispatch(fetchPosts(1));
+        dispatch(fetchPosts(1))
+          .unwrap()
+          .then(() => {
+            setOfflineMode(false);
+            setFailedAttempts(0);
+          })
+          .catch(() => {
+            setOfflineMode(true);
+            setFailedAttempts(prev => prev + 1);
+          });
       }
-    }, 20000);
+    }, refreshInterval);
 
     return () => clearInterval(intervalId);
-  }, [dispatch]);
+  }, [dispatch, offlineMode, failedAttempts]);
 
   const handleLoadMore = useCallback(() => {
     if (!isLoading && hasMoreItems) {
@@ -50,11 +79,12 @@ const FeedPage = () => {
   }, [dispatch, isLoading, hasMoreItems, currentPage]);
 
   const handlePostSubmit = useCallback(async (postData) => {
-    const { content, imageFile } = postData;
+    const { title, content, imageFile, isAnonymous } = postData;
     try {
-      await dispatch(createPost({ content, imageFile })).unwrap();
+      await dispatch(createPost({ title, content, imageFile, isAnonymous })).unwrap();
     } catch (err) {
       console.error('Post creation failed inside component:', err);
+      throw err; // Re-throw so PostComposer can display the error
     }
   }, [dispatch]);
 
@@ -63,7 +93,7 @@ const FeedPage = () => {
   }, [dispatch]);
 
   const handleCommentSubmit = useCallback((postId, content) => {
-    dispatch(addComment({ postId, content }));
+    dispatch(submitComment({ postId, text: content }));
   }, [dispatch]);
 
   const handleCommentDelete = useCallback((postId, commentId) => {
@@ -109,23 +139,57 @@ const FeedPage = () => {
   const displayError = typeof errorMsg === 'string' ? errorMsg : errorMsg?.message;
 
   return (
-    <div className="min-h-screen relative">
-      <div className="absolute inset-0 bg-cover bg-center" style={{
-        backgroundImage: "url('/farm-1.avif')",
-        filter: 'brightness(0.45) contrast(1.05)'
-      }} />
-      <div className="absolute inset-0 opacity-40" style={{
-        backgroundImage: 'radial-gradient(circle at 20% 50%, rgba(34, 197, 94, 0.28) 0%, transparent 50%), radial-gradient(circle at 80% 80%, rgba(59, 130, 246, 0.28) 0%, transparent 50%)'
-      }} />
-      <div className="relative z-10 max-w-4xl mx-auto px-4 py-8">
-        <div className="mb-8">
-          <h1 className="text-4xl font-bold text-white mb-2">Community Feed</h1>
-          <p className="text-gray-300">Share your farming experiences and learn from others</p>
+    <div className="min-h-screen bg-slate-50 py-8">
+      <div className="max-w-3xl mx-auto px-4">
+        
+        {/* Header Section */}
+        <header className="mb-6">
+          <h1 className="text-3xl font-bold text-slate-800">Community Feed</h1>
+          <p className="text-slate-500 mt-1">Welcome back, {userName}. Stay updated.</p>
+        </header>
+
+        {/* Search & Tags Card */}
+        <div className="bg-white p-4 rounded-xl shadow-sm border border-slate-100 mb-6">
+          <input
+            type="text"
+            value={searchInput}
+            onChange={(e) => setSearchInput(e.target.value)}
+            placeholder="Search posts, comments, or names..."
+            className="w-full bg-slate-50 border border-slate-200 rounded-lg px-4 py-2.5 text-sm outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition"
+          />
+          
+          {trendingTags.length > 0 && (
+            <div className="flex flex-wrap gap-2 mt-3">
+              {trendingTags.map((tag) => (
+                <button
+                  key={tag}
+                  type="button"
+                  onClick={() => setSearchInput(tag)}
+                  className="px-3 py-1 text-xs font-semibold rounded-full bg-green-50 text-green-700 hover:bg-green-100 transition-colors"
+                >
+                  {tag}
+                </button>
+              ))}
+            </div>
+          )}
         </div>
-        
-        <PostComposer onSubmit={handlePostSubmit} userInitial={userName[0].toUpperCase()} />
-        {displayError && <p className="text-red-500 text-sm mt-2 bg-red-50 p-3 rounded-lg">{displayError}</p>}
-        
+
+        {/* Post Composer */}
+        <div className="mb-8">
+          <PostComposer
+            onSubmit={handlePostSubmit}
+            userInitial={userName.charAt(0).toUpperCase()}
+          />
+        </div>
+
+        {/* Error Message */}
+        {displayError && (
+          <div className="bg-red-50 border border-red-200 text-red-700 p-3 rounded-lg text-sm mb-4">
+            {displayError}
+          </div>
+        )}
+
+        {/* Post List */}
         <PostList
           posts={filteredPosts}
           isLoading={isLoading}
@@ -137,6 +201,7 @@ const FeedPage = () => {
           onDeletePost={handleDeletePost}
           currentUserId={currentUserId}
         />
+        
       </div>
     </div>
   );

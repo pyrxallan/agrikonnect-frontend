@@ -11,18 +11,25 @@ const NotificationBadge = ({ userId }) => {
   useEffect(() => {
     if (!userId) return;
 
+    let retryCount = 0;
+    const maxRetries = 3;
+
     const fetchUnreadCount = async () => {
       try {
         const count = await notificationService.getUnreadCount();
         setUnreadCount(count);
+        retryCount = 0; // Reset on success
       } catch (error) {
-        // Silently fail - notification service may not be running
-        console.log('Notification service unavailable');
+        retryCount++;
+        // Only log first few errors to avoid console spam
+        if (retryCount <= maxRetries) {
+          console.error('Failed to fetch unread count:', error);
+        }
       }
     };
 
     fetchUnreadCount();
-    const interval = setInterval(fetchUnreadCount, 5000); // Poll every 5 seconds
+    const interval = setInterval(fetchUnreadCount, 30000);
 
     return () => clearInterval(interval);
   }, [userId]);
